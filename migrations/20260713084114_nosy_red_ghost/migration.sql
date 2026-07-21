@@ -1,0 +1,1 @@
+ALTER TABLE "loans" RENAME COLUMN "status" TO "loan_status";
