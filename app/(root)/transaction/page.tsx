@@ -41,14 +41,13 @@ const Transactions = () => {
       </div>
 
       <div className="space-y-6">
-        <div className="flex justify-between gap-6 p-3 pt-3 bg-zinc-50 rounded-full h-full">
-
-          <div className="flex gap-6">
+        <div className="flex flex-col md:flex-row justify-between gap-6 p-3 pt-3 bg-zinc-50 h-full rounded">
+          <div className="flex flex-col md:flex-row gap-6">
             {actionPanel.map((item) => (
               <div
                 key={item.name}
                 onClick={() => setSelected(item.name)}
-                className={`capitalize cursor-pointer px-2 py-1 rounded flex gap-2 items-center text-xs ${selected === item.name ? ' bg-black text-white px-6 rounded-full font-semibold' : 'text-gray-600'
+                className={`capitalize cursor-pointer px-2 py-1 rounded flex gap-2 items-center text-xs ${selected === item.name ? ' bg-black text-white px-6 font-semibold' : 'text-gray-600'
                   }`}
               >
                 {item.name}
@@ -62,8 +61,8 @@ const Transactions = () => {
           </button>
         </div>
 
-        <div className="flex-1">
-          <div className="w-full">
+        <div className="">
+          <div className="">
             <TransactionActionPanel status={STATUS_MAP[selected]} />
           </div>
         </div>

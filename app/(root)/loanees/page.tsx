@@ -19,7 +19,7 @@ interface Loanee {
     lastLogin: string | null;
 }
 
-const PAGE_SIZE = 7;
+const PAGE_SIZE = 10;
 
 const formatDate = (value: string | null) => {
     if (!value) return "—";
@@ -207,7 +207,7 @@ const LoaneesList = () => {
                                             </div>
                                         </td>
                                         <td className="px-4 py-3 text-zinc-600">{loanee.email}</td>
-                                        <td className="px-4 py-3 text-zinc-600 font-mono">
+                                        <td className="px-4 py-3 text-zinc-600">
                                             {loanee.phoneNumber}
                                         </td>
                                         <td className="px-4 py-3 text-zinc-600">

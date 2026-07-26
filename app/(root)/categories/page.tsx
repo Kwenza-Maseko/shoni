@@ -164,7 +164,7 @@ const MonthlyLoansPanel = () => {
                 Manage {label}
             </div>
 
-            <div className="flex gap-1.5 p-1 bg-zinc-50 rounded-lg w-fit mb-6 overflow-x-auto">
+            <div className="flex flex-wrap gap-1.5 p-1 bg-zinc-50 rounded-lg w-fit mb-6 overflow-x-auto">
                 {monthOptions.map((m) => (
                     <button
                         key={m.key}
@@ -185,7 +185,7 @@ const MonthlyLoansPanel = () => {
                         <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">
                             Total Loaned
                         </p>
-                        <p className="text-2xl font-semibold text-zinc-900 font-mono">
+                        <p className="text-2xl font-semibold text-zinc-900">
                             {formatCurrency(comparison.current)}
                         </p>
                     </div>
@@ -197,7 +197,7 @@ const MonthlyLoansPanel = () => {
                         <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">
                             Expected Return
                         </p>
-                        <p className="text-2xl font-semibold text-zinc-900 font-mono">
+                        <p className="text-2xl font-semibold text-zinc-900">
                             {formatCurrency(returnComparison.current)}
                         </p>
                     </div>
@@ -242,10 +242,10 @@ const MonthlyLoansPanel = () => {
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600 font-mono">
+                                        <td className="px-4 py-3 text-zinc-600">
                                             R{loan.principle}
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600 font-mono">
+                                        <td className="px-4 py-3 text-zinc-600">
                                             R{loan.cachedAmountOwed}
                                         </td>
                                         <td className="px-4 py-3 text-zinc-600">

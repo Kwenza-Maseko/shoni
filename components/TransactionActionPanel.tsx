@@ -11,7 +11,7 @@ interface TransactionActionPanelProps {
     status?: string;
 }
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 7;
 
 const formatDate = (value: string | null) => {
     if (!value) return "—";
@@ -117,6 +117,11 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
         }
     };
 
+
+    const handleWhatsAppNumber = (loaneePhoneNumber: string) => {
+        return `https://wa.me/27${loaneePhoneNumber.replace(/^0/, "")}`;
+    };
+
     if (loading) {
         return (
             <div className="w-full py-10 text-center text-sm text-zinc-500">
@@ -143,18 +148,16 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
 
     return (
         <div className=''>
-            <div className="mb-8 flex gap-6 items-center">
-                <div className="flex flex-wrap items-center gap-2">
-                    <Input
-                        className="ml-auto h-7 w-70 text-xs rounded-full"
-                        placeholder="Search name, email, phone number..."
-                        value={search}
-                        onChange={(e) => {
-                            setSearch(e.target.value);
-                            setPage(1);
-                        }}
-                    />
-                </div>
+            <div className="mb-8 flex gap-6 items-center w-full md:w-70">
+                <Input
+                    className="ml-auto h-7  text-xs rounded-full "
+                    placeholder="Search name, email, phone number..."
+                    value={search}
+                    onChange={(e) => {
+                        setSearch(e.target.value);
+                        setPage(1);
+                    }}
+                />
             </div>
 
             <div className="w-full overflow-x-auto rounded-lg border border-zinc-200">
@@ -198,15 +201,15 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                                                     <div className="flex gap-3 items-center ">
                                                         <Link
                                                             href={`tel:${trans.loaneePhoneNumber}`}
-                                                            className='text-blue-400 flex gap-1 items-center'
+                                                            className='text-blue-400 flex gap-0.5 items-center'
                                                         >
                                                             <PhoneCall className='w-3' />
                                                             Call
                                                         </Link>
                                                         <a
-                                                            href={`https://wa.me${trans.loaneePhoneNumber}}`}
+                                                            href={handleWhatsAppNumber(trans.loaneePhoneNumber)}
                                                             target="_blank" rel="noopener noreferrer"
-                                                            className='text-green-400 flex gap-1 items-center'
+                                                            className='text-green-400 flex gap-0.5 items-center'
                                                         >
                                                             <svg
                                                                 role="img"
@@ -224,16 +227,16 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                                             </div>
 
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600 font-mono">
+                                        <td className="px-4 py-3 text-zinc-600">
                                             R{trans.principle}
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600 font-mono">
+                                        <td className="px-4 py-3 text-zinc-600">
                                             {trans.baseInterestRate}%
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600 font-mono">
+                                        <td className="px-4 py-3 text-zinc-600">
                                             {trans.interestStage}
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600 font-mono">
+                                        <td className="px-4 py-3 text-zinc-600">
                                             R{trans.cachedAmountOwed}
                                         </td>
                                         <td className="px-4 py-3 text-zinc-600">

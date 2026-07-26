@@ -158,9 +158,13 @@ const StatCardsOverview = () => {
         />
       </div>
 
-      <div className="flex gap-5 mt-8">
-        <Profit totalProfit={totalProfit} monthlyData={monthlyData} />
-        <LoanVsReturn data={monthlyData} />
+      <div className="grid md:grid-cols-2 gap-5 mt-8">
+        <div>
+          <Profit totalProfit={totalProfit} monthlyData={monthlyData} />
+        </div>
+        <div>
+          <LoanVsReturn data={monthlyData} />
+        </div>
       </div>
     </div>
   );
