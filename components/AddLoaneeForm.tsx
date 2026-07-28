@@ -88,6 +88,10 @@ const AddLoaneeForm = ({ onSuccess }: AddLoaneeFormProps) => {
                 throw new Error(data?.message || "Failed to add loanee");
             }
 
+            if(data.success){
+                await deductAmount(Number(form.principal));
+            }
+            
             resetForm();
             setOpen(false);
             onSuccess?.();
@@ -97,6 +101,24 @@ const AddLoaneeForm = ({ onSuccess }: AddLoaneeFormProps) => {
         } finally {
             setSubmitting(false);
         }
+    };
+
+
+    const deductAmount = async (amount: number) => {
+        const response = await fetch("/api/shoni-account/subtract", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                amount,
+            }),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || "Failed to subtract amount");
+        }
+        return data;
     };
 
     return (

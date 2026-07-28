@@ -73,6 +73,10 @@ const TakeLoan = ({ id, name }: TakeLoanProps) => {
         throw new Error(data?.message || "Failed to add loanee");
       }
 
+      if (data.success) {
+        await deductAmount(Number(form.principal));
+      }
+
       resetForm();
       setOpen(false);
       toast(`Loan of ${form.principal} was sucessfully granted to ${name}`)
@@ -83,6 +87,25 @@ const TakeLoan = ({ id, name }: TakeLoanProps) => {
       setSubmitting(false);
     }
   };
+
+
+  const deductAmount = async (amount: number) => {
+    const response = await fetch("/api/shoni-account/subtract", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount,
+      }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to subtract amount");
+    }
+    return data;
+  };
+
 
   return (
     <Dialog
