@@ -91,35 +91,83 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
         newStatus: string,
         paidAt: string | null
     ) => {
-        const previous = transactions.find((t: { id: string; }) => t.id === loanId);
+        const previous = transactions.find(
+            (t: { id: string }) => t.id === loanId
+        );
 
-        updateTransactionLocal(loanId, { loanStatus: newStatus, paidAt });
+        if (!previous) {
+            toast.error("Transaction not found");
+            return;
+        }
+
+        updateTransactionLocal(loanId, {
+            loanStatus: newStatus,
+            paidAt,
+        });
 
         try {
+            // First update the transaction status
             const res = await fetch(`/api/transaction/${loanId}`, {
                 method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: newStatus }),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    status: newStatus,
+                }),
             });
 
             const data = await res.json();
-            if (!res.ok || !data.success) throw new Error(data?.message);
 
+            if (!res.ok || !data.success) {
+                throw new Error(
+                    data?.message || "Failed to update transaction"
+                );
+            }
             updateTransactionLocal(loanId, {
                 loanStatus: data.loan.LoanStatus,
                 paidAt: data.loan.paidAt,
             });
-        } catch {
-            if (previous) {
-                updateTransactionLocal(loanId, previous);
+
+            if (newStatus === "PAID") {
+                await addAmount(Number(previous.cachedAmountOwed));
+
+                toast.success(
+                    "Loan marked as paid and amount added to Shoni account"
+                );
             }
-            toast.error("Failed to update transaction");
+        } catch (error) {
+            console.error(error);
+
+            updateTransactionLocal(loanId, previous);
+
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to update transaction"
+            );
         }
     };
 
-
     const handleWhatsAppNumber = (loaneePhoneNumber: string) => {
         return `https://wa.me/27${loaneePhoneNumber.replace(/^0/, "")}`;
+    };
+
+    const addAmount = async (amount: number) => {
+        const response = await fetch("/api/shoni-account", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                amount,
+            }),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || "Failed to add amount");
+        }
+        return data;
     };
 
     if (loading) {
