@@ -34,17 +34,17 @@ export const StatCard = ({ label, value, subtext, icon: Icon, tone = "default" }
   const styles = TONE_STYLES[tone];
 
   return (
-    <div className="flex-1 min-w-50 rounded-lg border border-zinc-200 p-4 bg-white">
+    <div className="flex-1 min-w-50 rounded-lg border border-zinc-200 p-4 bg-zinc-50">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-medium text-zinc-500 uppercase tracking-wide">
+        <p className="text-xs font-medium  tracking-wide">
           {label}
         </p>
         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${styles.bg}`}>
           <Icon className={`w-4 h-4 ${styles.icon}`} />
         </div>
       </div>
-      <p className="text-2xl font-semibold text-zinc-900 font-mono">{value}</p>
-      {subtext && <p className="text-xs text-zinc-400 mt-1">{subtext}</p>}
+      <p className="text-2xl font-light text-zinc-900">{value}</p>
+      {subtext && <p className="text-xs text-zinc-500 mt-1">{subtext}</p>}
     </div>
   );
 };

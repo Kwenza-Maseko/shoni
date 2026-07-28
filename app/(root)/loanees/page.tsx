@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import ViewLoanee from "@/components/ViewLoanee";
 import UpdateLoanee from "@/components/UpdateLoanee";
 import TakeLoan from "@/components/TakeLoan";
+import UserTransactionHistory from "@/components/UserTransactionHistory";
 
 interface Loanee {
     id: string;
@@ -217,6 +218,10 @@ const LoaneesList = () => {
                                             {formatDate(loanee.lastLogin)}
                                         </td>
                                         <td className="px-4 py-3 text-zinc-600 flex gap-3 justify-end items-center h-full">
+                                            <TakeLoan
+                                                id={loanee.id}
+                                                name={loanee.fullName}
+                                            />
                                             <UpdateLoanee
                                                 id={loanee.id}
                                                 name={loanee.fullName}
@@ -230,10 +235,11 @@ const LoaneesList = () => {
                                                 createdAt={loanee.createdAt}
                                                 lastLogin={loanee.lastLogin || ""}
                                             />
-
-                                            <TakeLoan
+                                            <UserTransactionHistory
                                                 id={loanee.id}
                                                 name={loanee.fullName}
+                                                email={loanee.email}
+                                                phoneNumber={loanee.phoneNumber}
                                             />
                                         </td>
                                     </tr>

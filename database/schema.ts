@@ -15,7 +15,7 @@ import {
 
 export const userRoleEnum = pgEnum("user_role", ["LOANEE", "LOANER"]);
 export const protectedEnum = pgEnum("protected_status", ["YES", "NO"]);
-export const pageOpenedEnum = pgEnum("page_opened", ["YES", "NO"]); 
+export const pageOpenedEnum = pgEnum("page_opened", ["YES", "NO"]);
 
 export const loanStatusEnum = pgEnum("loan_status", [
     "ACTIVE",
@@ -104,8 +104,6 @@ export const loanStageHistory = pgTable("loan_stage_history", {
     reason: text("reason").default("grace_period_expired"),
 });
 
-
- 
 export const settings = pgTable(
     "settings",
     {
@@ -130,6 +128,20 @@ export const settings = pgTable(
         ),
     })
 );
+
+export const shoniAccount = pgTable("shoni_account", {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    loanerId: uuid("loaner_id")
+        .notNull()
+        .references(() => users.id),
+    amount: numeric("amount", {
+        precision: 12,
+        scale: 2,
+    }).notNull(),
+    createAt: timestamp("created_at", { withTimezone: true })
+        .defaultNow()
+        .notNull(),
+});
 
 // ---------------------------------------------------------------------------
 // RELATIONS

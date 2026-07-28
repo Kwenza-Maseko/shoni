@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUp, ArrowDown, Minus, ChevronLeft, ChevronRight, Crown } from "lucide-react";
+import { ArrowUp, ArrowDownIcon, Minus, ChevronLeft, ChevronRight, Crown, ArrowBigDown, ArrowDown01, ChevronDown, MoveDown, MoveUpIcon, MoveDownIcon } from "lucide-react";
 import { useTransactionStore } from "@/lib/store/useTransactionStore";
 import type { Transcations } from "@/lib/loan-auto-status";
 import { getRecentMonthOptions, getLoansByMonthKey, totalLoaned, totalExpectedReturn } from "@/lib/loan-stat";
@@ -37,26 +37,33 @@ const DeltaPill = ({ delta, percent }: Pick<DeltaResult, "delta" | "percent">) =
     if (delta === null) return null;
 
     return (
-        <div
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${delta > 0
-                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                : delta < 0
-                    ? "bg-red-50 text-red-700 border-red-200"
-                    : "bg-zinc-50 text-zinc-600 border-zinc-200"
-                }`}
-        >
-            {delta > 0 ? (
-                <ArrowUp className="w-3 h-3" />
-            ) : delta < 0 ? (
-                <ArrowDown className="w-3 h-3" />
-            ) : (
-                <Minus className="w-3 h-3" />
-            )}
-            {percent !== null
-                ? `${Math.abs(percent).toFixed(1)}%`
-                : formatCurrency(Math.abs(delta))}
-            <span className="text-zinc-400 font-normal">vs last month</span>
-        </div>
+     <div
+    className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded border ${
+        delta > 0
+            ? "text-emerald-700 bg-emerald-50 border-emerald-100"
+            : delta < 0
+                ? "text-red-700 bg-red-50 border-red-100"
+                : "text-zinc-600 bg-zinc-50 border-zinc-100"
+    }`}
+>
+    {delta > 0 ? (
+        <MoveUpIcon className="w-4 h-4 shrink-0" strokeWidth={2} />
+    ) : delta < 0 ? (
+        <MoveDownIcon className="w-4 h-4 shrink-0" strokeWidth={2} />
+    ) : (
+        <Minus className="w-4 h-4 shrink-0" strokeWidth={2} />
+    )}
+
+    <span>
+        {percent !== null
+            ? `${Math.abs(percent).toFixed(1)}%`
+            : formatCurrency(Math.abs(delta))}
+    </span>
+
+    <span className="text-zinc-600 font-normal whitespace-nowrap">
+        vs last month
+    </span>
+</div>
     );
 };
 
@@ -180,28 +187,37 @@ const MonthlyLoansPanel = () => {
             </div>
 
             <div className="flex flex-wrap gap-4 mb-6">
-                <div className="flex items-center gap-4 flex-1 min-w-70 p-4 rounded-lg border border-zinc-200 bg-white">
+                <div className="flex items-center gap-4 flex-1 min-w-70 p-4 rounded-lg border border-zinc-200 bg-zinc-50 ">
                     <div>
-                        <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">
+                        <p className="text-xs tracking-wide mb-1">
                             Total Loaned
                         </p>
-                        <p className="text-2xl font-semibold text-zinc-900">
-                            {formatCurrency(comparison.current)}
-                        </p>
+                        <div className="flex gap-2">
+                            <p className="text-2xl font-light text-zinc-900">
+                                {formatCurrency(comparison.current)}
+                            </p>
+
+                            <DeltaPill delta={comparison.delta} percent={comparison.percent} />
+                        </div>
                     </div>
-                    <DeltaPill delta={comparison.delta} percent={comparison.percent} />
                 </div>
 
-                <div className="flex items-center gap-4 flex-1 min-w-70 p-4 rounded-lg border border-zinc-200 bg-white">
+                <div className="flex items-center gap-4 flex-1 min-w-70 p-4 rounded-lg border border-zinc-200 bg-zinc-50 ">
                     <div>
-                        <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">
+                        <p className="text-xs tracking-wide mb-1">
                             Expected Return
                         </p>
-                        <p className="text-2xl font-semibold text-zinc-900">
+
+                          <div className="flex gap-2">
+                            <p className="text-2xl font-light text-zinc-900">
                             {formatCurrency(returnComparison.current)}
                         </p>
+
+                            <DeltaPill delta={returnComparison.delta} percent={returnComparison.percent} />
+                        </div>
+                        
                     </div>
-                    <DeltaPill delta={returnComparison.delta} percent={returnComparison.percent} />
+                    
                 </div>
             </div>
 
