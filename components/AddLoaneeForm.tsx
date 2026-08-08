@@ -88,10 +88,10 @@ const AddLoaneeForm = ({ onSuccess }: AddLoaneeFormProps) => {
                 throw new Error(data?.message || "Failed to add loanee");
             }
 
-            if(data.success){
+            if (data.success) {
                 await deductAmount(Number(form.principal));
             }
-            
+
             resetForm();
             setOpen(false);
             onSuccess?.();

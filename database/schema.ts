@@ -31,6 +31,8 @@ export const users = pgTable("users", {
     password: text("password").notNull(),
     phoneNumber: varchar("phone_number", { length: 13 }).notNull(),
     role: userRoleEnum("role").default("LOANEE").notNull(),
+    bankId: uuid("bankId")
+        .references(() => bank.id),
     lastLogin: timestamp("last_login", { withTimezone: true }).defaultNow(),
     createdAt: timestamp("created_at", { withTimezone: true })
         .defaultNow()
@@ -39,6 +41,15 @@ export const users = pgTable("users", {
     passwordResetExpires: timestamp("password_reset_expires", {
         withTimezone: true,
     }),
+});
+
+export const bank = pgTable("bank", {
+    id: uuid("id").notNull().primaryKey().defaultRandom(),
+    bankName: varchar({ length: 50 }).notNull(),
+    charges: numeric("charges", { precision: 12, scale: 2 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+        .defaultNow()
+        .notNull(),
 });
 
 export const loans = pgTable("loans", {
@@ -74,6 +85,9 @@ export const loans = pgTable("loans", {
         .defaultNow()
         .notNull(),
 });
+
+
+
 
 export const payments = pgTable("payments", {
     id: uuid("id").notNull().primaryKey().defaultRandom(),
@@ -142,10 +156,6 @@ export const shoniAccount = pgTable("shoni_account", {
         .defaultNow()
         .notNull(),
 });
-
-// ---------------------------------------------------------------------------
-// RELATIONS
-// ---------------------------------------------------------------------------
 
 export const usersRelations = relations(users, ({ many }) => ({
     loansGiven: many(loans, { relationName: "loaner" }),
