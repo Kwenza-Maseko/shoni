@@ -13,7 +13,7 @@ interface TransactionActionPanelProps {
 
 
 
-const PAGE_SIZE = 7;
+const PAGE_SIZE = 5;
 
 const formatDate = (value: string | null) => {
     if (!value) return "—";
