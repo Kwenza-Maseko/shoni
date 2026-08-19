@@ -154,7 +154,7 @@ const TakeLoan = ({ id, name }: TakeLoanProps) => {
             </div>
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 w-full">
             <Label htmlFor="dueAt">Taken date</Label>
             <Input
               id="dueAt"

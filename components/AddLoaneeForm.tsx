@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Dialog,
     DialogContent,
@@ -23,15 +23,25 @@ interface FormState {
     fullName: string;
     email: string;
     phoneNumber: string;
+    bankId: string;
+    charges: string;
     principal: string;
     baseInterestRate: string;
     takenAt: string,
+}
+
+interface Bank {
+    id: string,
+    bankName: string,
+    charges: string,
 }
 
 const INITIAL_STATE: FormState = {
     fullName: "",
     email: "",
     phoneNumber: "",
+    bankId: "",
+    charges: "",
     principal: "",
     baseInterestRate: "40.00",
     takenAt: "",
@@ -41,6 +51,37 @@ const AddLoaneeForm = ({ onSuccess }: AddLoaneeFormProps) => {
     const [open, setOpen] = useState(false);
     const [form, setForm] = useState<FormState>(INITIAL_STATE);
     const [submitting, setSubmitting] = useState(false);
+    const [bank, setBank] = useState<Bank[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchBank = async () => {
+            setLoading(true)
+            try {
+                const res = await fetch("/api/bank");
+                if (!res.ok) {
+                    throw new Error("Failed to fetch loanees");
+                }
+
+                const data = await res.json();
+                if (data?.success === false) {
+                    throw new Error(data.message || "Failed to fetch loanees");
+                }
+
+                setLoading(false);
+                setBank(data);
+            } catch (err) {
+                console.error(err);
+                toast("Could not load bank. Please try again.");
+
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBank();
+    }, []);
+
 
     const handleChange = (field: keyof FormState) => (
         e: React.ChangeEvent<HTMLInputElement>
@@ -76,6 +117,7 @@ const AddLoaneeForm = ({ onSuccess }: AddLoaneeFormProps) => {
                     fullName: form.fullName.trim(),
                     email: form.email.trim(),
                     phoneNumber: form.phoneNumber.trim(),
+                    bankId: form.bankId,
                     principal: form.principal,
                     baseInterestRate: form.baseInterestRate,
                     takenAt: new Date(form.takenAt).toISOString(),
@@ -89,7 +131,7 @@ const AddLoaneeForm = ({ onSuccess }: AddLoaneeFormProps) => {
             }
 
             if (data.success) {
-                await deductAmount(Number(form.principal));
+                await deductAmount(Number(form.principal), Number(form.charges));
             }
 
             resetForm();
@@ -103,8 +145,7 @@ const AddLoaneeForm = ({ onSuccess }: AddLoaneeFormProps) => {
         }
     };
 
-
-    const deductAmount = async (amount: number) => {
+    const deductAmount = async (amount: number, charges: number) => {
         const response = await fetch("/api/shoni-account/subtract", {
             method: "PATCH",
             headers: {
@@ -112,6 +153,7 @@ const AddLoaneeForm = ({ onSuccess }: AddLoaneeFormProps) => {
             },
             body: JSON.stringify({
                 amount,
+                charges
             }),
         });
         const data = await response.json();
@@ -174,6 +216,54 @@ const AddLoaneeForm = ({ onSuccess }: AddLoaneeFormProps) => {
                         />
                     </div>
 
+
+                    <div className="space-y-1.5">
+                        <Label htmlFor="bankId">Bank</Label>
+
+                        {loading ? (
+                            <p className="text-sm text-muted-foreground">
+                                Loading banks...
+                            </p>
+                        ) : (
+                            <select
+                                id="bankId"
+                                value={form.bankId}
+                                onChange={(e) =>
+                                    setForm((prev) => ({
+                                        ...prev,
+                                        bankId: e.target.value,
+                                    }))
+                                }
+                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                required
+                            >
+                                <option value="" disabled>
+                                    Select a bank
+                                </option>
+
+                                {bank.map((item) => (
+                                    <option key={item.id} value={item.id}>
+                                        {item.bankName}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
+                    </div>
+
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="dueAt">Taken date</Label>
+                            <Input
+                                id="takenAt"
+                                type="date"
+                                value={form.takenAt}
+                                onChange={handleChange("takenAt")}
+                                required
+                            />
+                        </div>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1.5">
                             <Label htmlFor="principal">Principal (R)</Label>
@@ -198,18 +288,6 @@ const AddLoaneeForm = ({ onSuccess }: AddLoaneeFormProps) => {
                                 step="0.01"
                                 value={form.baseInterestRate}
                                 onChange={handleChange("baseInterestRate")}
-                            />
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1.5">
-                            <Label htmlFor="dueAt">Taken date</Label>
-                            <Input
-                                id="takenAt"
-                                type="date"
-                                value={form.takenAt}
-                                onChange={handleChange("takenAt")}
-                                required
                             />
                         </div>
                     </div>

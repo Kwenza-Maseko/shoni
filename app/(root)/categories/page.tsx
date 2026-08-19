@@ -37,33 +37,32 @@ const DeltaPill = ({ delta, percent }: Pick<DeltaResult, "delta" | "percent">) =
     if (delta === null) return null;
 
     return (
-     <div
-    className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded border ${
-        delta > 0
-            ? "text-emerald-700 bg-emerald-50 border-emerald-100"
-            : delta < 0
-                ? "text-red-700 bg-red-50 border-red-100"
-                : "text-zinc-600 bg-zinc-50 border-zinc-100"
-    }`}
->
-    {delta > 0 ? (
-        <MoveUpIcon className="w-4 h-4 shrink-0" strokeWidth={2} />
-    ) : delta < 0 ? (
-        <MoveDownIcon className="w-4 h-4 shrink-0" strokeWidth={2} />
-    ) : (
-        <Minus className="w-4 h-4 shrink-0" strokeWidth={2} />
-    )}
+        <div
+            className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded border ${delta > 0
+                    ? "text-emerald-700 bg-emerald-50 border-emerald-100"
+                    : delta < 0
+                        ? "text-red-700 bg-red-50 border-red-100"
+                        : "text-zinc-600 bg-zinc-50 border-zinc-100"
+                }`}
+        >
+            {delta > 0 ? (
+                <MoveUpIcon className="w-4 h-4 shrink-0" strokeWidth={2} />
+            ) : delta < 0 ? (
+                <MoveDownIcon className="w-4 h-4 shrink-0" strokeWidth={2} />
+            ) : (
+                <Minus className="w-4 h-4 shrink-0" strokeWidth={2} />
+            )}
 
-    <span>
-        {percent !== null
-            ? `${Math.abs(percent).toFixed(1)}%`
-            : formatCurrency(Math.abs(delta))}
-    </span>
+            <span>
+                {percent !== null
+                    ? `${Math.abs(percent).toFixed(1)}%`
+                    : formatCurrency(Math.abs(delta))}
+            </span>
 
-    <span className="text-zinc-600 font-normal whitespace-nowrap">
-        vs last month
-    </span>
-</div>
+            <span className="text-zinc-600 font-normal whitespace-nowrap">
+                vs last month
+            </span>
+        </div>
     );
 };
 
@@ -164,14 +163,19 @@ const MonthlyLoansPanel = () => {
     }, [loansThisMonth, loansPreviousMonth, previousKey]);
 
     return (
-        <div className="mt-4">
-            <p className='tracking-wide uppercase font-bold mb-1'>{label}</p>
-            <div className="flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border w-fit bg-amber-50 text-amber-700 border-amber-200 mb-8">
-                <Crown className="w-3 h-3" />
-                Manage {label}
+        <div className="">
+            <div className="bg-white fixed top-0 w-full">
+                <div className="pt-4">
+                    <p className='tracking-wide uppercase font-bold mb-1'>{label}</p>
+                    <div className="flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border w-fit bg-amber-50 text-amber-700 border-amber-200 mb-6">
+                        <Crown className="w-3 h-3" />
+                        Manage {label}
+                    </div>
+                </div>
             </div>
 
-            <div className="flex flex-wrap gap-1.5 p-1 bg-zinc-50 rounded-lg w-fit mb-6 overflow-x-auto">
+
+            <div className="mt-25 flex flex-wrap gap-1.5 p-1 bg-zinc-50 rounded-lg w-fit mb-6 overflow-x-auto">
                 {monthOptions.map((m) => (
                     <button
                         key={m.key}
@@ -208,16 +212,16 @@ const MonthlyLoansPanel = () => {
                             Expected Return
                         </p>
 
-                          <div className="flex gap-2">
+                        <div className="flex gap-2">
                             <p className="text-2xl font-light text-zinc-900">
-                            {formatCurrency(returnComparison.current)}
-                        </p>
+                                {formatCurrency(returnComparison.current)}
+                            </p>
 
                             <DeltaPill delta={returnComparison.delta} percent={returnComparison.percent} />
                         </div>
-                        
+
                     </div>
-                    
+
                 </div>
             </div>
 

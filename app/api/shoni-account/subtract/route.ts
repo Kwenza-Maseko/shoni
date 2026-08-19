@@ -33,9 +33,10 @@ export async function PATCH(req: Request) {
             );
         }
 
-        const { amount } = await req.json();
+        const { amount, charges } = await req.json();
 
         const subtractAmount = Number(amount);
+        const subtractCharges = Number(charges);
 
         if (!Number.isFinite(subtractAmount) || subtractAmount <= 0) {
             return NextResponse.json(
@@ -85,7 +86,7 @@ export async function PATCH(req: Request) {
             );
         }
 
-        const updatedAmount = currentAmount - (subtractAmount + 1);
+        const updatedAmount = currentAmount - (subtractAmount + subtractCharges);
 
         const [updatedAccount] = await db
             .update(shoniAccount)

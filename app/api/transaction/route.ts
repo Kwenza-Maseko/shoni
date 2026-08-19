@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/database/drizzle";
-import { users, loans } from "@/database/schema";
+import { users, loans, bank } from "@/database/schema";
 import { and, eq } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
@@ -21,28 +21,35 @@ export async function GET(req: NextRequest) {
             ? and(eq(loans.loanerId, session.user.id), eq(loans.LoanStatus, status))
             : eq(loans.loanerId, session.user.id);
 
-        const items = await db
-            .selectDistinct({
-                id: loans.id,
-                loanerId: loans.loanerId,
-                loaneeId: loans.loaneeId,
-                loaneeName: users.fullName,
-                loaneePhoneNumber: users.phoneNumber,
-                principle: loans.principal,
-                baseInterestRate: loans.baseInterestRate,
-                interestStage: loans.interestStage,
-                cachedAmountOwed: loans.cachedAmountOwed,
-                loanStatus: loans.LoanStatus,
-                takenAt: loans.takenAt,
-                dueDate: loans.dueAt,
-                gracePeriod: loans.graceEndsAt,
-                paidAt: loans.paidAt,
-                createAt: loans.createdAt,
-                updatedAt: loans.updatedAt,
-            })
-            .from(loans)
-            .innerJoin(users, eq(loans.loaneeId, users.id))
-            .where(whereClause);
+       const items = await db
+    .selectDistinct({
+        id: loans.id,
+        loanerId: loans.loanerId,
+        loaneeId: loans.loaneeId,
+
+        loaneeName: users.fullName,
+        loaneePhoneNumber: users.phoneNumber,
+
+        principle: loans.principal,
+        baseInterestRate: loans.baseInterestRate,
+        interestStage: loans.interestStage,
+        cachedAmountOwed: loans.cachedAmountOwed,
+        loanStatus: loans.LoanStatus,
+        takenAt: loans.takenAt,
+        dueDate: loans.dueAt,
+        gracePeriod: loans.graceEndsAt,
+        paidAt: loans.paidAt,
+        createAt: loans.createdAt,
+        updatedAt: loans.updatedAt,
+
+        bankId: bank.id,
+        bankName: bank.bankName,
+        bankCharges: bank.charges,
+    })
+    .from(loans)
+    .innerJoin(users, eq(loans.loaneeId, users.id))
+    .leftJoin(bank, eq(users.bankId, bank.id))
+    .where(whereClause);
 
         return NextResponse.json(items);
     } catch (error) {

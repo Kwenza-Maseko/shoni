@@ -29,8 +29,8 @@ export const totalExpectedReturn = (loans: Transcations[]): number =>
     loans.reduce((sum, l) => sum + (parseFloat(l.cachedAmountOwed) || 0), 0);
  
 export interface MonthOption {
-    key: string;   // "2026-6" — stable identifier to match against
-    label: string; // "July 2026" — what you'd show on a tab
+    key: string;
+    label: string;
 }
  
 

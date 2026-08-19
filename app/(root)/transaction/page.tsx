@@ -33,14 +33,18 @@ const Transactions = () => {
   };
 
   return (
-    <div className='mt-4'>
-      <p className='tracking-wide uppercase font-bold mb-1'>{label}</p>
-      <div className="flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border w-fit bg-amber-50 text-amber-700 border-amber-200 mb-6">
-        <Crown className="w-3 h-3" />
-        Manage {label}
+    <div className=''>
+      <div className="bg-white fixed top-0 w-full">
+        <div className="pt-4">
+          <p className='tracking-wide uppercase font-bold mb-1'>{label}</p>
+          <div className="flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border w-fit bg-amber-50 text-amber-700 border-amber-200 mb-6">
+            <Crown className="w-3 h-3" />
+            Manage {label}
+          </div>
+        </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-6 mt-25">
         <div className="flex flex-col md:flex-row justify-between gap-6 p-3 pt-3 bg-zinc-50 h-full rounded">
           <div className="flex flex-col md:flex-row gap-6">
             {actionPanel.map((item) => (

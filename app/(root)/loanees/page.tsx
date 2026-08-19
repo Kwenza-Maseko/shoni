@@ -14,6 +14,7 @@ interface Loanee {
     id: string;
     fullName: string;
     email: string;
+    bankName: string;
     role: "LOANEE" | "LOANER";
     phoneNumber: string;
     createdAt: string;
@@ -32,6 +33,30 @@ const formatDate = (value: string | null) => {
 };
 
 const getInitials = (name: string) => name.charAt(0).toUpperCase();
+
+
+export const bankImageUrl = [
+    {
+        bankName: "Capitec Bank",
+        imageUrl: "/banks/capitec.jpeg"
+    },
+    {
+        bankName: "Gotyme Bank",
+        imageUrl: "/banks/gotyme_bank.jpeg"
+    },
+    {
+        bankName: "Nedbank Bank",
+        imageUrl: "/banks/nedbank.jpeg"
+    },
+    {
+        bankName: "Standard Bank",
+        imageUrl: "/banks/standard.jpeg"
+    },
+    {
+        bankName: "FNB Bank",
+        imageUrl: "/banks/fnb-logo.jpg"
+    },
+];
 
 const LoaneesList = () => {
     const pathname = usePathname();
@@ -127,12 +152,17 @@ const LoaneesList = () => {
     if (loanees.length === 0) {
         return (
             <div className="w-full py-4 text-sm">
-                <p className='tracking-wide uppercase font-bold mb-1'>{label}</p>
-                <div className="flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border w-fit bg-amber-50 text-amber-700 border-amber-200 mb-8">
-                    <Crown className="w-3 h-3" />
-                    Manage {label}
+                <div className="bg-white fixed top-0 w-full">
+                    <div className="pt-4">
+                        <p className='tracking-wide uppercase font-bold mb-1'>{label}</p>
+                        <div className="flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border w-fit bg-amber-50 text-amber-700 border-amber-200 mb-6">
+                            <Crown className="w-3 h-3" />
+                            Manage {label}
+                        </div>
+                    </div>
                 </div>
-                <div className="mb-8 flex gap-6 items-center">
+
+                <div className="mb-8 flex gap-6 items-center mt-25">
                     <AddLoaneeForm />
                     <div className="flex flex-wrap items-center gap-2">
                         <Input
@@ -186,6 +216,7 @@ const LoaneesList = () => {
                                     <th className="px-4 py-3 font-medium">Name</th>
                                     <th className="px-4 py-3 font-medium">Email</th>
                                     <th className="px-4 py-3 font-medium">Phone</th>
+                                    <th className="px-4 py-3 font-medium">Bank</th>
                                     <th className="px-4 py-3 font-medium">Joined</th>
                                     <th className="px-4 py-3 font-medium">Last Login</th>
                                     <th className="px-4 py-3 font-medium text-end">Action</th>
@@ -211,6 +242,29 @@ const LoaneesList = () => {
                                         <td className="px-4 py-3 text-zinc-600">
                                             {loanee.phoneNumber}
                                         </td>
+
+                                        <td className="px-4 py-3 text-zinc-600">
+                                            {(() => {
+                                                const bankImage = bankImageUrl.find(
+                                                    (bank) =>
+                                                        bank.bankName.toLowerCase() ===
+                                                        loanee.bankName?.toLowerCase()
+                                                );
+
+                                                return (
+                                                    <div className="flex items-center gap-2">
+                                                        {bankImage && (
+                                                            <img
+                                                                src={bankImage.imageUrl}
+                                                                alt={loanee.bankName ?? "Bank"}
+                                                                className="w-14 h-14 object-contain rounded"
+                                                            />
+                                                        )}
+                                                    </div>
+                                                );
+                                            })()}
+                                        </td>
+
                                         <td className="px-4 py-3 text-zinc-600">
                                             {formatDate(loanee.createdAt)}
                                         </td>

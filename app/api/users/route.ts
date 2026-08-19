@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/database/drizzle";
-import { users, loans } from "@/database/schema";
+import { users, loans, bank } from "@/database/schema";
 import { eq } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
@@ -21,9 +21,14 @@ export async function GET(req: NextRequest) {
                 phoneNumber: users.phoneNumber,
                 createdAt: users.createdAt,
                 lastLogin: users.lastLogin,
+
+                bankId: bank.id,
+                bankName: bank.bankName,
+                bankCharges: bank.charges,
             })
             .from(users)
             .innerJoin(loans, eq(loans.loaneeId, users.id))
+            .leftJoin(bank, eq(users.bankId, bank.id))
             .where(eq(loans.loanerId, session.user.id));
 
         return NextResponse.json(items);

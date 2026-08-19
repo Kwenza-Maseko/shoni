@@ -11,6 +11,8 @@ interface TransactionActionPanelProps {
     status?: string;
 }
 
+
+
 const PAGE_SIZE = 7;
 
 const formatDate = (value: string | null) => {
@@ -29,6 +31,30 @@ export const loanStatus = [
     "GRACE_PERIOD",
     "DEFAULTED",
     "PAID",
+];
+
+
+export const bankImageUrl = [
+    {
+        bankName: "Capitec Bank",
+        imageUrl: "/banks/capitec.jpeg"
+    },
+    {
+        bankName: "Gotyme Bank",
+        imageUrl: "/banks/gotyme_bank.jpeg"
+    },
+    {
+        bankName: "Nedbank Bank",
+        imageUrl: "/banks/nedbank.jpeg"
+    },
+    {
+        bankName: "Standard Bank",
+        imageUrl: "/banks/standard.jpeg"
+    },
+    {
+        bankName: "FNB Bank",
+        imageUrl: "/banks/fnb-logo.jpg"
+    },
 ];
 
 const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
@@ -106,7 +132,6 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
         });
 
         try {
-            // First update the transaction status
             const res = await fetch(`/api/transaction/${loanId}`, {
                 method: "PATCH",
                 headers: {
@@ -220,10 +245,11 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                             <thead className="bg-zinc-50 text-zinc-600 border-b border-zinc-200">
                                 <tr>
                                     <th className="px-4 py-3 font-medium">Loanee</th>
-                                    <th className="px-4 py-3 font-medium">Principle</th>
-                                    <th className="px-4 py-3 font-medium">Interest Rate</th>
-                                    <th className="px-4 py-3 font-medium">Interest Stage</th>
-                                    <th className="px-4 py-3 font-medium">Amount Owe</th>
+                                    <th className="px-4 py-3 font-medium">Amount</th>
+                                    <th className="px-4 py-3 font-medium">Interest</th>
+                                    <th className="px-4 py-3 font-medium">Stage</th>
+                                    <th className="px-4 py-3 font-medium">Owing</th>
+                                    <th className="px-4 py-3 font-medium">Bank</th>
                                     <th className="px-4 py-3 font-medium">Status</th>
                                     <th className="px-4 py-3 font-medium">Taken At</th>
                                     <th className="px-4 py-3 font-medium">Due At</th>
@@ -278,6 +304,7 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                                         <td className="px-4 py-3 text-zinc-600">
                                             R{trans.principle}
                                         </td>
+
                                         <td className="px-4 py-3 text-zinc-600">
                                             {trans.baseInterestRate}%
                                         </td>
@@ -286,6 +313,28 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                                         </td>
                                         <td className="px-4 py-3 text-zinc-600">
                                             R{trans.cachedAmountOwed}
+                                        </td>
+
+                                        <td className="px-4 py-3 text-zinc-600">
+                                            {(() => {
+                                                const bankImage = bankImageUrl.find(
+                                                    (bank) =>
+                                                        bank.bankName.toLowerCase() ===
+                                                        trans.bankName?.toLowerCase()
+                                                );
+
+                                                return (
+                                                    <div className="flex items-center gap-2">
+                                                        {bankImage && (
+                                                            <img
+                                                                src={bankImage.imageUrl}
+                                                                alt={trans.bankName ?? "Bank"}
+                                                                className="w-14 h-14 object-contain rounded"
+                                                            />
+                                                        )}
+                                                    </div>
+                                                );
+                                            })()}
                                         </td>
                                         <td className="px-4 py-3 text-zinc-600">
                                             <StatusDropdown

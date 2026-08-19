@@ -7,6 +7,7 @@ interface CreateLoaneeBody {
     fullName: string;
     email: string;
     phoneNumber: string;
+    bankId: string;
     password?: string;
     principal: string;
     baseInterestRate?: string;
@@ -44,6 +45,7 @@ export async function POST(req: Request) {
             email,
             phoneNumber,
             password,
+            bankId,
             principal,
             baseInterestRate,
             takenAt,
@@ -70,6 +72,7 @@ export async function POST(req: Request) {
                 password: passwordHash,
                 phoneNumber,
                 role: "LOANEE",
+                bankId: bankId
             })
             .returning({
                 id: users.id,
@@ -79,6 +82,7 @@ export async function POST(req: Request) {
                 phoneNumber: users.phoneNumber,
                 createdAt: users.createdAt,
                 lastLogin: users.lastLogin,
+                bankId: users.bankId
             });
 
         const numPrincipal = parseFloat(principal);

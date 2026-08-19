@@ -121,13 +121,18 @@ const StatCardsOverview = () => {
   }
 
   return (
-    <div className='mt-4'>
-      <p className='tracking-wide uppercase font-bold mb-1'>{label}</p>
-      <div className="flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border w-fit bg-amber-50 text-amber-700 border-amber-200 mb-6">
-        <Crown className="w-3 h-3" />
-        Manage {label}
+    <div>
+      <div className="bg-white fixed top-0 w-full">
+        <div className="pt-4">
+          <p className='tracking-wide uppercase font-bold mb-1'>{label}</p>
+          <div className="flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border w-fit bg-amber-50 text-amber-700 border-amber-200 mb-6">
+            <Crown className="w-3 h-3" />
+            Manage {label}
+          </div>
+        </div>
       </div>
-      <div className="flex gap-4 flex-wrap">
+
+      <div className="mt-25 flex gap-4 flex-wrap">
         <StatCard
           label="Total Amount Owed"
           value={formatCurrency(stats.totalAmountOwed)}

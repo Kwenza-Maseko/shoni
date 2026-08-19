@@ -17,8 +17,16 @@ interface ShoniAccount {
     amount: string;
 }
 
-const Sidebar = () => {
-    const [isOpened, setIsOpened] = useState(true);
+interface SidebarProps {
+    isOpened: boolean;
+    setIsOpened: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Sidebar = ({
+    isOpened,
+    setIsOpened,
+}: SidebarProps) => {
+    
     const [shoniAccount, setShoniAccount] =
         useState<ShoniAccount | null>(null);
     const [loading, setLoading] = useState(true);
@@ -65,7 +73,7 @@ const Sidebar = () => {
     };
 
     return (
-        <div className="relative">
+        <div className="fixed z-50">
             <div
                 className="absolute right-2 top-3.5 cursor-pointer"
                 onClick={toggle}
@@ -78,8 +86,8 @@ const Sidebar = () => {
             </div>
 
             <div
-                className={`${isOpened ? "w-64" : "w-12"
-                    } overflow-x-hidden min-h-screen bg-zinc-50 p-2`}
+                className={`${isOpened ? "w-64" : "w-12"}
+        overflow-x-hidden min-h-screen bg-zinc-50 p-2`}
             >
                 {isOpened ? (
                     <p className="text-lg font-black">Shoni</p>
@@ -119,28 +127,31 @@ const Sidebar = () => {
                     })}
                 </div>
 
-                <div className="mt-5 rounded-md bg-zinc-100 border border-zinc-200 p-4 space-y-4">
-                    <p className="text-[11px] uppercase tracking-wide">
-                        Shoni Balance
-                    </p>
+                {isOpened && (
+                    <div className="mt-5  rounded-md bg-zinc-100 border border-zinc-200 p-4 space-y-4">
+                        <p className="text-[11px] uppercase tracking-wide">
+                            Shoni Balance
+                        </p>
 
-                    {loading ? (
-                        <p className="text-sm text-gray-500">
-                            R00,0
-                        </p>
-                    ) : shoniAccount ? (
-                        <div>
-                            <p className="text-lg font-bold">
-                                {formatCurrency(shoniAccount.amount)}
+                        {loading ? (
+                            <p className="text-sm text-gray-500">
+                                R00,0
                             </p>
-                            <p className="text-xs text-gray-600">Available Balance</p>
-                        </div>
-                    ) : (
-                        <p className="text-sm text-gray-500 mt-4">
-                            No account found
-                        </p>
-                    )}
-                </div>
+                        ) : shoniAccount ? (
+                            <div>
+                                <p className="text-lg font-bold">
+                                    {formatCurrency(shoniAccount.amount)}
+                                </p>
+                                <p className="text-xs text-gray-600">Available Balance</p>
+                            </div>
+                        ) : (
+                            <p className="text-sm text-gray-500 mt-4">
+                                No account found
+                            </p>
+                        )}
+                    </div>
+                )}
+
             </div>
         </div>
     );

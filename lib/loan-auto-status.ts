@@ -9,6 +9,7 @@ export interface Transcations {
     baseInterestRate: string;
     interestStage: string;
     cachedAmountOwed: string;
+    bankName: string,
     loanStatus: string;
     takenAt: string;
     dueDate: string;
@@ -37,7 +38,7 @@ const daysSince = (dateStr: string): number => {
 
 const TERM_DAYS = 30;
 const GRACE_DAYS = 3;
-const DEFAULT_STARTS_AT = TERM_DAYS + GRACE_DAYS + 1; 
+const DEFAULT_STARTS_AT = TERM_DAYS + GRACE_DAYS + 1;
 
 export function computeAutoLoanUpdate(trans: Transcations): AutoStatusUpdate | null {
     if (trans.loanStatus === "PAID") return null;
@@ -59,7 +60,7 @@ export function computeAutoLoanUpdate(trans: Transcations): AutoStatusUpdate | n
         };
     }
     if (daysElapsed < DEFAULT_STARTS_AT) {
-        if (trans.loanStatus === "GRACE_PERIOD") return null; 
+        if (trans.loanStatus === "GRACE_PERIOD") return null;
 
         const takenDate = new Date(trans.takenAt);
         const graceEndsAt = new Date(takenDate);
@@ -68,7 +69,7 @@ export function computeAutoLoanUpdate(trans: Transcations): AutoStatusUpdate | n
         return {
             loanStatus: "GRACE_PERIOD",
             interestStage: Number(trans.interestStage),
-            cachedAmountOwed: trans.cachedAmountOwed,    
+            cachedAmountOwed: trans.cachedAmountOwed,
             gracePeriod: graceEndsAt.toISOString(),
         };
     }

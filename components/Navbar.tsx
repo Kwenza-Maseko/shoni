@@ -33,7 +33,7 @@ const Navbar = ({ name, email, role }: NavbarProps) => {
     
 
     return (
-        <div className="fixed right-6 top-5" ref={ref}>
+        <div className="fixed right-6 top-5 z-50" ref={ref}>
             <div
                 className="rounded-full p-0.5 w-14 bg-zinc-200 flex justify-between gap-3 items-center shadow-md cursor-pointer border border-zinc-300 "
                 onClick={() => setOpen((prev) => !prev)}
