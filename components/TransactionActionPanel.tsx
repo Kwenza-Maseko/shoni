@@ -11,8 +11,6 @@ interface TransactionActionPanelProps {
     status?: string;
 }
 
-
-
 const PAGE_SIZE = 5;
 
 const formatDate = (value: string | null) => {
@@ -195,6 +193,12 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
         return data;
     };
 
+
+    const totalOwed = useMemo(
+        () => filtered.reduce((sum, t) => sum + (Number(t.cachedAmountOwed) || 0), 0),
+        [filtered]
+    );
+
     if (loading) {
         return (
             <div className="w-full py-10 text-center text-sm text-zinc-500">
@@ -221,9 +225,25 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
 
     return (
         <div className=''>
+            {search.trim() && (
+                <div className="mb-4 w-full sm:w-64 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3">
+                    <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wide">
+                        Total Owing
+                    </span>
+                    <div className="mt-1 flex items-baseline gap-2">
+                        <span className="text-lg font-semibold text-zinc-900">
+                            R{totalOwed.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                        <span className="text-xs text-zinc-500">
+                            across {filtered.length} loan{filtered.length !== 1 ? "s" : ""}
+                        </span>
+                    </div>
+                </div>
+            )}
+
             <div className="mb-8 flex gap-6 items-center w-full md:w-70">
                 <Input
-                    className="ml-auto h-7  text-xs rounded-full "
+                    className="ml-auto h-7 text-xs rounded-full"
                     placeholder="Search name, email, phone number..."
                     value={search}
                     onChange={(e) => {

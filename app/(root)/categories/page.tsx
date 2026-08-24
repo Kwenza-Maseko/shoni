@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUp, ArrowDownIcon, Minus, ChevronLeft, ChevronRight, Crown, ArrowBigDown, ArrowDown01, ChevronDown, MoveDown, MoveUpIcon, MoveDownIcon } from "lucide-react";
+import { Minus, ChevronLeft, ChevronRight, Crown, MoveUpIcon, MoveDownIcon } from "lucide-react";
 import { useTransactionStore } from "@/lib/store/useTransactionStore";
-import type { Transcations } from "@/lib/loan-auto-status";
 import { getRecentMonthOptions, getLoansByMonthKey, totalLoaned, totalExpectedReturn } from "@/lib/loan-stat";
 import { usePathname } from "next/navigation";
-
 
 const formatCurrency = (amount: number) => {
     return `R${amount.toLocaleString("en-ZA", {
