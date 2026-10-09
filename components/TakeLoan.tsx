@@ -114,6 +114,7 @@ const TakeLoan = ({ id, name }: TakeLoanProps) => {
         setOpen(next);
         if (!next) resetForm();
       }}
+
     >
       <DialogTrigger className="flex justify-center items-center w-5 h-5 rounded bg-black hover:bg-black/70 transition-colors"
         aria-label={`Grant ${name}`}>

@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useTransactionStore } from '@/lib/store/useTransactionStore';
 import Link from 'next/link';
 import { siWhatsapp } from 'simple-icons/icons';
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface TransactionActionPanelProps {
     status?: string;
@@ -68,6 +69,10 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
 
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
+
+    const handleWhatsAppFunction = () => {
+
+    }
 
     useEffect(() => {
         fetchTransactions().then(() => {
@@ -200,11 +205,15 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
     );
 
     if (loading) {
-        return (
-            <div className="w-full py-10 text-center text-sm text-zinc-500">
-                Loading transactions...
-            </div>
-        );
+        <div className="flex w-full max-w-sm flex-col gap-2">
+            {Array.from({ length: 5 }).map((_, index) => (
+                <div className="flex gap-4" key={index}>
+                    <Skeleton className="h-4 flex-1" />
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-20" />
+                </div>
+            ))}
+        </div>
     }
 
     if (error) {

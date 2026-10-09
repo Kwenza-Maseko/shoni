@@ -8,6 +8,7 @@ import {
   Bell,
   Settings,
   HistoryIcon,
+  Banknote
 } from "lucide-react";
 
 export const FIELD_NAMES = {
@@ -36,7 +37,7 @@ export const sidebarLinks = [
   },
   {
     id: 3,
-    name: "loanees",
+    name: "Manual Transaction",
     url: "/loanees",
     icon: Users,
   },

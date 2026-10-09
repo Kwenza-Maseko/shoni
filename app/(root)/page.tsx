@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation";
 import { Profit } from "@/components/Profit";
 import { LoanVsReturn } from "@/components/LoanVsReturns";
 import { computeTotalProfit, computeMonthlyLoanVsProfit } from "@/lib/loan-stat";
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const formatCurrency = (amount: number) => {
   return `R${amount.toLocaleString("en-ZA", {
@@ -109,14 +111,22 @@ const StatCardsOverview = () => {
 
   if (loading && transactions.length === 0) {
     return (
-      <div className="flex gap-4 flex-wrap">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div
-            key={i}
-            className="flex-1 min-w-50 h-24 rounded-lg border border-zinc-200 bg-zinc-50 animate-pulse"
-          />
-        ))}
+      <div className="space-y-5">
+        <div className="flex gap-4 flex-wrap mt-16">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="flex-1 min-w-50 h-24 rounded-lg border border-zinc-200 bg-zinc-50 animate-pulse"
+            />
+          ))}
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-5">
+          <div className="w-full h-80 rounded-xl border border-zinc-200 bg-zinc-50 animate-pulse" />
+          <div className="w-full h-80 rounded-xl border border-zinc-200 bg-zinc-50 animate-pulse" />
+        </div>
       </div>
+
     );
   }
 

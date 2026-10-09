@@ -9,6 +9,7 @@ import ViewLoanee from "@/components/ViewLoanee";
 import UpdateLoanee from "@/components/UpdateLoanee";
 import TakeLoan from "@/components/TakeLoan";
 import UserTransactionHistory from "@/components/UserTransactionHistory";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Loanee {
     id: string;
@@ -135,9 +136,22 @@ const LoaneesList = () => {
 
     if (loading) {
         return (
-            <div className="w-full py-10 text-center text-sm text-zinc-500">
-                Loading loanees...
+            <div className="space-y-4 mt-20">
+                <Skeleton className="w-full h-8" />
+                <div className="flex w-full flex-col gap-2">
+                    {Array.from({ length: 7 }).map((_, index) => (
+                        <div className="flex gap-4" key={index}>
+                            <Skeleton className="h-10 flex-1" />
+                            <Skeleton className="h-10 w-34" />
+                            <Skeleton className="h-10 w-34" />
+                            <Skeleton className="h-10 w-34" />
+                            <Skeleton className="h-10 w-34" />
+                            <Skeleton className="h-10 w-34" />
+                        </div>
+                    ))}
+                </div>
             </div>
+
         );
     }
 
@@ -226,8 +240,7 @@ const LoaneesList = () => {
                                 {paginated.map((loanee) => (
                                     <tr
                                         key={loanee.id}
-                                        className="border-b border-zinc-100 last:border-0 hover:bg-zinc-50"
-                                    >
+                                        className="border-b border-zinc-100 last:border-0 hover:bg-zinc-50" >
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-3">
                                                 <div className="bg-black text-white w-7 h-7 flex items-center justify-center rounded-full text-xs shrink-0">
@@ -238,11 +251,12 @@ const LoaneesList = () => {
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600">{loanee.email}</td>
+                                        <td className="px-4 py-3 text-zinc-600">
+                                            {loanee.email}
+                                        </td>
                                         <td className="px-4 py-3 text-zinc-600">
                                             {loanee.phoneNumber}
                                         </td>
-
                                         <td className="px-4 py-3 text-zinc-600">
                                             {(() => {
                                                 const bankImage = bankImageUrl.find(
@@ -264,37 +278,47 @@ const LoaneesList = () => {
                                                 );
                                             })()}
                                         </td>
-
                                         <td className="px-4 py-3 text-zinc-600">
                                             {formatDate(loanee.createdAt)}
                                         </td>
                                         <td className="px-4 py-3 text-zinc-600">
                                             {formatDate(loanee.lastLogin)}
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600 flex gap-3 justify-end items-center h-full">
-                                            <TakeLoan
-                                                id={loanee.id}
-                                                name={loanee.fullName}
-                                            />
-                                            <UpdateLoanee
-                                                id={loanee.id}
-                                                name={loanee.fullName}
-                                                phoneNumber={loanee.phoneNumber}
-                                            />
-                                            <ViewLoanee
-                                                name={loanee.fullName}
-                                                role={loanee.role}
-                                                email={loanee.email}
-                                                phoneNumber={loanee.phoneNumber}
-                                                createdAt={loanee.createdAt}
-                                                lastLogin={loanee.lastLogin || ""}
-                                            />
-                                            <UserTransactionHistory
-                                                id={loanee.id}
-                                                name={loanee.fullName}
-                                                email={loanee.email}
-                                                phoneNumber={loanee.phoneNumber}
-                                            />
+                                        <td className="px-4 py-3 text-zinc-600 flex gap-3 justify-end items-center h-20">
+                                            <div>
+                                                <TakeLoan
+                                                    id={loanee.id}
+                                                    name={loanee.fullName}
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <UpdateLoanee
+                                                    id={loanee.id}
+                                                    name={loanee.fullName}
+                                                    phoneNumber={loanee.phoneNumber}
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <ViewLoanee
+                                                    name={loanee.fullName}
+                                                    role={loanee.role}
+                                                    email={loanee.email}
+                                                    phoneNumber={loanee.phoneNumber}
+                                                    createdAt={loanee.createdAt}
+                                                    lastLogin={loanee.lastLogin || ""}
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <UserTransactionHistory
+                                                    id={loanee.id}
+                                                    name={loanee.fullName}
+                                                    email={loanee.email}
+                                                    phoneNumber={loanee.phoneNumber}
+                                                />
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
