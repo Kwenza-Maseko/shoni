@@ -15,37 +15,47 @@ const UnlockForm = () => {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError(null);
+    const [protectionCode, setProtectionCode] = useState("");
+    const [loading, setLoading] = useState(false);
 
-        if (!code.trim()) {
-            setError("Enter the protection code.");
-            return;
-        }
+    const page = searchParams.get("next");
 
-        setSubmitting(true);
+
+    async function handleUnlock(
+        event: React.FormEvent<HTMLFormElement>
+    ) {
+        event.preventDefault();
+        setError("");
+        setLoading(true);
+
         try {
-            const res = await fetch("/api/settings/unlock", {
+            const response = await fetch("/api/settings/unlock", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ page: next, protectionCode: code }),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    page,
+                    protectionCode,
+                }),
             });
 
-            const data = await res.json();
+            const data = await response.json();
 
-            if (!res.ok || !data.success) {
-                throw new Error(data?.message || "Incorrect protection code");
+            if (!response.ok || !data.success) {
+                setError(data.message || "Unable to unlock page");
+                return;
             }
 
-            router.push(next);
+            // The API response has now set the unlock cookie.
+            router.replace(data.redirectTo);
             router.refresh();
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Something went wrong");
+        } catch {
+            setError("Something went wrong. Please try again.");
         } finally {
-            setSubmitting(false);
+            setLoading(false);
         }
-    };
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center px-4">
@@ -61,19 +71,23 @@ const UnlockForm = () => {
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-3">
+
+                <form onSubmit={handleUnlock} className="space-y-3">
                     <Input
                         type="password"
-                        value={code}
-                        onChange={(e) => setCode(e.target.value)}
-                        placeholder="Protection code"
+                        value={protectionCode}
+                        onChange={(event) =>
+                            setProtectionCode(event.target.value)
+                        }
                         autoFocus
+                        placeholder="Enter protection code"
+                        required
                     />
 
-                    {error && <p className="text-sm text-red-600">{error}</p>}
+                    {error && <p className="text-red-500">{error}</p>}
 
-                    <Button type="submit" className="w-full" disabled={submitting}>
-                        {submitting ? "Verifying..." : "Unlock"}
+                    <Button type="submit" disabled={loading} className="w-full">
+                        {loading ? "Unlocking..." : "Unlock Page"}
                     </Button>
                 </form>
             </div>

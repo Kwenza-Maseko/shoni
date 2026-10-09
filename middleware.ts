@@ -39,9 +39,15 @@ export default auth(async (req) => {
 
     const unlockedPage = req.cookies.get(UNLOCK_COOKIE_NAME)?.value;
 
-    if (unlockedPage === nextUrl.pathname) {
+    if (
+        unlockedPage === pathname ||
+        (unlockedPage &&
+            pathname.startsWith(`${unlockedPage}/`))
+    ) {
         return NextResponse.next();
     }
+
+
 
     const [pageSetting] = await db
         .select({

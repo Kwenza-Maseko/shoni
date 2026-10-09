@@ -47,8 +47,10 @@ export async function POST(req: NextRequest) {
                 { status: 400 }
             );
         }
-
-        const isMatch = await bcrypt.compare(protectionCode, pageSetting.protectionPass);
+        const isMatch = await bcrypt.compare(
+            protectionCode,
+            pageSetting.protectionPass
+        );
 
         if (!isMatch) {
             return NextResponse.json(
@@ -57,7 +59,10 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const response = NextResponse.json({ success: true });
+        const response = NextResponse.json({
+            success: true,
+            redirectTo: page,
+        });
 
         response.cookies.set(UNLOCK_COOKIE_NAME, page, {
             httpOnly: true,
