@@ -7,6 +7,7 @@ import { useTransactionStore } from '@/lib/store/useTransactionStore';
 import Link from 'next/link';
 import { siWhatsapp } from 'simple-icons/icons';
 import { Skeleton } from "@/components/ui/skeleton"
+import { Checkbox } from './ui/checkbox';
 
 interface TransactionActionPanelProps {
     status?: string;
@@ -69,7 +70,25 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
 
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
+    // remove: const [marked, setMarked] = useState(false);
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
+    const toggleSelected = (id: string, checked: boolean) => {
+        setSelectedIds((prev) => {
+            const next = new Set(prev);
+            if (checked) next.add(id);
+            else next.delete(id);
+            return next;
+        });
+    };
+
+    const selectedTotal = useMemo(
+        () =>
+            transactions
+                .filter((t) => selectedIds.has(t.id))
+                .reduce((sum, t) => sum + (Number(t.cachedAmountOwed) || 0), 0),
+        [transactions, selectedIds]
+    );
     const handleWhatsAppFunction = () => {
 
     }
@@ -250,6 +269,28 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                 </div>
             )}
 
+            {selectedIds.size > 0 && (
+                <div className="mb-4 w-full sm:w-64 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3">
+                    <span className="text-[11px] font-medium text-emerald-700 uppercase tracking-wide">
+                        Marked Total
+                    </span>
+                    <div className="mt-1 flex items-baseline gap-2">
+                        <span className="text-lg font-semibold text-zinc-900">
+                            R{selectedTotal.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                        <span className="text-xs text-zinc-500">
+                            across {selectedIds.size} loan{selectedIds.size !== 1 ? "s" : ""}
+                        </span>
+                    </div>
+                    <button
+                        onClick={() => setSelectedIds(new Set())}
+                        className="mt-2 text-xs text-emerald-700 underline"
+                    >
+                        Clear selection
+                    </button>
+                </div>
+            )}
+
             <div className="mb-8 flex gap-6 items-center w-full md:w-70">
                 <Input
                     className="ml-auto h-7 text-xs rounded-full"
@@ -273,6 +314,19 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                         <table className="w-full text-xs text-left ">
                             <thead className="bg-zinc-50 text-zinc-600 border-b border-zinc-200">
                                 <tr>
+                                    <th className="px-4 py-3 font-medium">
+                                        <Checkbox
+                                            checked={paginated.length > 0 && paginated.every((t) => selectedIds.has(t.id))}
+                                            onCheckedChange={(checked) =>
+                                                setSelectedIds((prev) => {
+                                                    const next = new Set(prev);
+                                                    paginated.forEach((t) => (checked === true ? next.add(t.id) : next.delete(t.id)));
+                                                    return next;
+                                                })
+                                            }
+                                            aria-label="Mark all on this page"
+                                        />
+                                    </th>
                                     <th className="px-4 py-3 font-medium">Loanee</th>
                                     <th className="px-4 py-3 font-medium">Amount</th>
                                     <th className="px-4 py-3 font-medium">Interest</th>
@@ -292,6 +346,13 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                                         key={trans.id}
                                         className="border-b border-zinc-100 last:border-0 hover:bg-zinc-50"
                                     >
+                                        <td className="px-4 py-3">
+                                            <Checkbox
+                                                checked={selectedIds.has(trans.id)}
+                                                onCheckedChange={(checked) => toggleSelected(trans.id, checked === true)}
+                                                aria-label={`Mark ${trans.loaneeName}`}
+                                            />
+                                        </td>
                                         <td className="px-4 py-3">
                                             <div className="flex gap-3">
                                                 <div className="bg-black text-white w-7 h-7 flex items-center justify-center rounded-full text-xs shrink-0">

@@ -10,16 +10,10 @@ const UnlockForm = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const next = searchParams.get("next") || "/settings";
-
-    const [code, setCode] = useState("");
-    const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
     const [protectionCode, setProtectionCode] = useState("");
     const [loading, setLoading] = useState(false);
-
     const page = searchParams.get("next");
-
 
     async function handleUnlock(
         event: React.FormEvent<HTMLFormElement>
@@ -71,7 +65,6 @@ const UnlockForm = () => {
                     </p>
                 </div>
 
-
                 <form onSubmit={handleUnlock} className="space-y-3">
                     <Input
                         type="password"
@@ -83,9 +76,7 @@ const UnlockForm = () => {
                         placeholder="Enter protection code"
                         required
                     />
-
                     {error && <p className="text-red-500">{error}</p>}
-
                     <Button type="submit" disabled={loading} className="w-full">
                         {loading ? "Unlocking..." : "Unlock Page"}
                     </Button>
