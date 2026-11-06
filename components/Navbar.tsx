@@ -38,7 +38,7 @@ const Navbar = ({ name, email, role }: NavbarProps) => {
 
     return (
         <nav className="fixed left-0 right-0 top-0 z-50 flex justify-between items-center gap-4 border-b border-slate-800 bg-slate-950 px-6">
-            <div className="flex gap-6 items-center">
+            <div className="flex gap-3 md:gap-6 items-center">
                 <div className="flex gap-3 items-center">
                     <Link
                         href={"/"}
