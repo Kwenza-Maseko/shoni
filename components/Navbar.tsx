@@ -25,7 +25,7 @@ const getInitials = (name: string) => {
 
 const Navbar = ({ name, email, role }: NavbarProps) => {
     const pathname = usePathname();
-    const [isOpened, setIsOpened] = useState(true);
+    const [isOpened, setIsOpened] = useState(false);
     const label =
         pathname === "/"
             ? "Overview"
@@ -56,7 +56,9 @@ const Navbar = ({ name, email, role }: NavbarProps) => {
             </div>
 
             <div className="flex gap-8 items-center">
-                <div className="flex gap-8 ">
+
+
+                <div className="md:flex gap-8 hidden">
                     {sidebarLinks.map((item) => {
                         const Icon = item.icon;
                         return (
@@ -84,6 +86,8 @@ const Navbar = ({ name, email, role }: NavbarProps) => {
                         );
                     })}
                 </div>
+
+
 
                 <div className="flex gap-3 items-center">
                     <Collapsible>
@@ -127,10 +131,53 @@ const Navbar = ({ name, email, role }: NavbarProps) => {
                     >
                         <Settings className="w-4" />
                     </Link>
+
+                    <div className="md:hidden block space-y-1 py-4 relative"
+                        onClick={() => setIsOpened((prev) => !prev)}
+                    >
+                        <div className="w-4 h-0.5 bg-white" />
+                        <div className="w-4 h-0.5 bg-white" />
+                        <div className="w-4 h-0.5 bg-white" />
+
+
+
+                        {isOpened && (
+                            <div className="md:hidden gap-8 block fixed top-0 bottom-0 right-0 left-0 bg-slate-900 p-4">
+
+
+                                {sidebarLinks.map((item) => {
+                                    const Icon = item.icon;
+                                    return (
+                                        <div className="flex gap-2"
+                                            key={item.id}>
+                                            <Link
+                                                href={item.url}
+                                                aria-current={
+                                                    pathname.startsWith(item.url)
+                                                        ? "page"
+                                                        : undefined
+                                                }
+                                                className={cn(
+                                                    "flex items-center gap-2 capitalize transition-colors w-full py-2 ",
+                                                    pathname === item.url
+                                                        ? "border-b-2 border-blue-400 font-bold text-blue-400"
+                                                        : "text-slate-100 hover:text-gray-500 "
+                                                )}
+                                            >
+                                                <Icon className="w-4 h-4 " />
+                                                {item.name}
+                                            </Link>
+                                        </div>
+
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
-        </nav>
+        </nav >
     );
 };
 
