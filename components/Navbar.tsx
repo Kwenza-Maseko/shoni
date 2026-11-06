@@ -1,9 +1,8 @@
 "use client";
 
-import { ChevronUp, Crown, LogOut, Settings } from "lucide-react";
+import { Crown, LogOut, Settings } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
-import Messages from "./Messages";
 import {
     Collapsible,
     CollapsibleContent,
