@@ -171,7 +171,7 @@ const AddLoaneeForm = ({ onSuccess }: AddLoaneeFormProps) => {
                 if (!next) resetForm();
             }}
         >
-            <DialogTrigger className="bg-black text-white rounded-full py-2 px-3 flex gap-2 items-center">
+            <DialogTrigger className="bg-blue-500 text-white rounded-md py-2.5 px-3 flex gap-2 items-center">
                 <Plus className="w-4 h-4" />
                 Add Loanee
             </DialogTrigger>

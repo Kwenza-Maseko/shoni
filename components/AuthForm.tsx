@@ -7,10 +7,10 @@ import type { $ZodType } from "zod/v4/core"
 import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import Link from 'next/link'
@@ -67,10 +67,10 @@ const AuthForm = <T extends FieldValues>({
         <div className="w-100 px-8 flex flex-col items-center gap-8">
 
             <div className="flex flex-col gap-2 text-center">
-                <h3 className="font-medium text-gray-500 uppercase">
+                <h3 className="font-medium text-blue-500 uppercase">
                     {isSignIn ? "Sign in" : "Sign up"}
                 </h3>
-                <p className="text-center text-gray-500 text-lg font-semibold tracking-tight">
+                <p className="text-center text-blue-500 text-lg font-semibold tracking-tight">
                     {isSignIn ? "Welcome to Shoni" : "Create an account with us"}
                 </p>
             </div>
@@ -87,7 +87,7 @@ const AuthForm = <T extends FieldValues>({
                                     <div className="flex justify-between w-full">
                                         <FieldLabel
                                             htmlFor={field.name}
-                                            className="text-[11px] text-zinc-500 uppercase tracking-wider"
+                                            className="text-[11px] text-white uppercase tracking-wider"
                                         >
                                             {FIELD_NAMES[field.name as keyof typeof FIELD_NAMES]}
                                         </FieldLabel>
@@ -99,7 +99,7 @@ const AuthForm = <T extends FieldValues>({
                                         required
                                         aria-invalid={fieldState.invalid}
                                         type={FIELD_TYPE[field.name as keyof typeof FIELD_TYPE]}
-                                        className="w-full px-3 py-2 text-sm border border-zinc-200 rounded-lg outline-none focus:border-zinc-400 bg-white transition-colors"
+                                        className="w-full px-3 py-5 text-sm border border-slate-700 rounded-lg outline-none focus:border-zinc-400 bg-slate-800 transition-colors"
                                     />
 
                                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -111,7 +111,7 @@ const AuthForm = <T extends FieldValues>({
 
                 <Button
                     type="submit"
-                    className="w-full font-bold py-5 cursor-pointer"
+                    className="w-full font-bold py-5 cursor-pointer bg-blue-500 p-5 hover:bg-blue-400"
                     disabled={loading}
                 >
                     {loading ? (

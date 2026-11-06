@@ -39,10 +39,10 @@ const UserTransactionHistory = ({ id, name, email, phoneNumber }: UserTransactio
         <Dialog open={open} onOpenChange={setOpen}>
             <button
                 onClick={() => setOpen(true)}
-                className="flex justify-center items-center w-5 h-5 rounded"
+                className="cursor-pointer"
                 aria-label={`View ${name}`}
             >
-                <HistoryIcon className="w-3.5 h-3.5 text-gray-500" />
+                <HistoryIcon className="w-4.5 h-4.5 text-gray-100" />
             </button>
 
             <DialogContent className="sm:max-w-md">

@@ -58,10 +58,10 @@ const UnlockForm = () => {
                     <div className="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center mb-3">
                         <Lock className="w-5 h-5 text-zinc-700" />
                     </div>
-                    <h1 className="text-lg font-semibold text-zinc-900">Protected page</h1>
-                    <p className="text-sm text-zinc-500 mt-1">
+                    <h1 className="text-lg font-semibold text-blue-500">Protected page</h1>
+                    <p className="text-sm text-slate-100 mt-1">
                         Enter the protection code to continue to{" "}
-                        <span className="font-mono text-zinc-700">{next}</span>
+                        <span className="font-mono text-blue-500">{next}</span>
                     </p>
                 </div>
 
@@ -75,9 +75,10 @@ const UnlockForm = () => {
                         autoFocus
                         placeholder="Enter protection code"
                         required
+                        className="w-full px-3 py-5 text-sm border border-slate-700 rounded-lg outline-none focus:border-zinc-400 bg-slate-800 transition-colors"
                     />
                     {error && <p className="text-red-500">{error}</p>}
-                    <Button type="submit" disabled={loading} className="w-full">
+                    <Button type="submit" disabled={loading} className="w-full bg-blue-500 p-5 hover:bg-blue-400">
                         {loading ? "Unlocking..." : "Unlock Page"}
                     </Button>
                 </form>

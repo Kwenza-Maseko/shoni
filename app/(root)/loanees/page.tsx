@@ -166,21 +166,11 @@ const LoaneesList = () => {
     if (loanees.length === 0) {
         return (
             <div className="w-full py-4 text-sm">
-                <div className="bg-white fixed top-0 w-full">
-                    <div className="pt-4">
-                        <p className='tracking-wide uppercase font-bold mb-1'>{label}</p>
-                        <div className="flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border w-fit bg-amber-50 text-amber-700 border-amber-200 mb-6">
-                            <Crown className="w-3 h-3" />
-                            Manage {label}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mb-8 flex gap-6 items-center mt-25">
+                <div className="mb-16 flex gap-6 items-center mt-25">
                     <AddLoaneeForm />
                     <div className="flex flex-wrap items-center gap-2">
                         <Input
-                            className="ml-auto h-7 w-70 text-xs rounded-full py-4.5 px-4"
+                            className="px-3 py-5 text-sm border border-slate-500 rounded-lg outline-none focus:border-zinc-400 bg-slate-800 transition-colors w-70"
                             placeholder="Search name, email, phone number..."
                             value={search}
                             onChange={(e) => {
@@ -196,17 +186,12 @@ const LoaneesList = () => {
     }
 
     return (
-        <div className="mt-4">
-            <p className='tracking-wide uppercase font-bold mb-1'>{label}</p>
-            <div className="flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border w-fit bg-amber-50 text-amber-700 border-amber-200 mb-8">
-                <Crown className="w-3 h-3" />
-                Manage {label}
-            </div>
+        <div className="mt-18">
             <div className="mb-8 flex gap-6 items-center">
                 <AddLoaneeForm />
                 <div className="flex flex-wrap items-center gap-2">
                     <Input
-                        className="ml-auto h-7 w-70 text-xs rounded-full py-4.5 px-4"
+                        className="px-3 py-5 text-sm border border-slate-500 rounded-lg outline-none focus:border-zinc-400 bg-slate-800 transition-colors w-70"
                         placeholder="Search name, email, phone number..."
                         value={search}
                         onChange={(e) => {
@@ -216,7 +201,7 @@ const LoaneesList = () => {
                     />
                 </div>
             </div>
-            <div className="w-full overflow-x-auto rounded-lg border border-zinc-200 ">
+            <div className="w-full overflow-hidden rounded-xl border border-gray-800 bg-gray-700 shadow-lg">
 
                 {filtered.length === 0 ? (
                     <div className="w-full py-10 text-center text-sm text-zinc-500">
@@ -225,39 +210,39 @@ const LoaneesList = () => {
                 ) : (
                     <>
                         <table className="w-full text-xs text-left">
-                            <thead className="bg-zinc-50 text-zinc-600 border-b border-zinc-200">
+                            <thead className="border-b border-gray-800 bg-gray-800 text-gray-400">
                                 <tr>
-                                    <th className="px-4 py-3 font-medium">Name</th>
-                                    <th className="px-4 py-3 font-medium">Email</th>
-                                    <th className="px-4 py-3 font-medium">Phone</th>
-                                    <th className="px-4 py-3 font-medium">Bank</th>
-                                    <th className="px-4 py-3 font-medium">Joined</th>
-                                    <th className="px-4 py-3 font-medium">Last Login</th>
-                                    <th className="px-4 py-3 font-medium text-end">Action</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Name</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Email</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Phone</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Bank</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Joined</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Last Login</th>
+                                    <th className="px-4 py-3 font-medium text-end uppercase tracking-wider">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {paginated.map((loanee) => (
                                     <tr
                                         key={loanee.id}
-                                        className="border-b border-zinc-100 last:border-0 hover:bg-zinc-50" >
+                                        className="border-b border-gray-600/60 transition-colors last:border-0 hover:bg-gray-600/50">
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-3">
-                                                <div className="bg-black text-white w-7 h-7 flex items-center justify-center rounded-full text-xs shrink-0">
+                                                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-amber-300 to-amber-600 text-xs font-semibold text-gray-900">
                                                     {getInitials(loanee.fullName)}
                                                 </div>
-                                                <span className="font-medium text-zinc-900">
+                                                <span className="font-bold text-white">
                                                     {loanee.fullName}
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600">
+                                        <td className="px-4 py-3 text-slate-300">
                                             {loanee.email}
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600">
+                                        <td className="px-4 py-3 text-slate-300">
                                             {loanee.phoneNumber}
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600">
+                                        <td className="px-4 py-3 text-slate-300">
                                             {(() => {
                                                 const bankImage = bankImageUrl.find(
                                                     (bank) =>
@@ -278,13 +263,13 @@ const LoaneesList = () => {
                                                 );
                                             })()}
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600">
+                                        <td className="px-4 py-3 text-slate-300">
                                             {formatDate(loanee.createdAt)}
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600">
+                                        <td className="px-4 py-3 text-slate-300">
                                             {formatDate(loanee.lastLogin)}
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600 flex gap-3 justify-end items-center h-20">
+                                        <td className="px-4 py-3 text-zinc-600 flex gap-4 justify-end items-center h-20">
                                             <div>
                                                 <TakeLoan
                                                     id={loanee.id}
@@ -325,7 +310,7 @@ const LoaneesList = () => {
                             </tbody>
                         </table>
 
-                        <div className="flex items-center justify-between px-6 py-3 border-t border-border text-xs text-zinc-500">
+                        <div className="flex items-center justify-between border-t border-gray-800 bg-gray-800/40 px-4 py-3 text-xs text-gray-400">
                             <span>
                                 Showing {(page - 1) * PAGE_SIZE + 1}–
                                 {Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
@@ -334,17 +319,17 @@ const LoaneesList = () => {
                                 <button
                                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                                     disabled={page === 1}
-                                    className="flex items-center justify-center w-6 h-6 rounded-full border border-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-50"
+                                    className="flex h-6 w-6 items-center justify-center rounded-full border border-gray-500 text-gray-200 transition-colors hover:border-amber-400 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-gray-500 disabled:hover:text-gray-200"
                                 >
                                     <ChevronLeft className="w-3.5 h-3.5" />
                                 </button>
                                 <span>
-                                    Page {page} of {totalPages}
+                                    Page <span className="text-white">{page}</span> of {totalPages}
                                 </span>
                                 <button
                                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                     disabled={page === totalPages}
-                                    className="flex items-center justify-center w-6 h-6 rounded-full border border-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-50"
+                                    className="flex h-6 w-6 items-center justify-center rounded-full border border-gray-500 text-gray-200 transition-colors hover:border-amber-400 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-gray-500 disabled:hover:text-gray-200"
                                 >
                                     <ChevronRight className="w-3.5 h-3.5" />
                                 </button>

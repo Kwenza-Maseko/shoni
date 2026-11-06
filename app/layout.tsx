@@ -28,7 +28,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
       className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", geist.variable)}
     >
       <ProviderWrapper>
-        <body className="min-h-full flex flex-col text-sm">
+        <body className="min-h-full flex flex-col text-sm bg-slate-950 text-slate-200">
           <Toaster />
           {children}
         </body>

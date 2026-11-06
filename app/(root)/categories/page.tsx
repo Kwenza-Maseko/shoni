@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Minus, ChevronLeft, ChevronRight, Crown, MoveUpIcon, MoveDownIcon } from "lucide-react";
+import { Minus, ChevronLeft, ChevronRight, MoveUpIcon, MoveDownIcon } from "lucide-react";
 import { useTransactionStore } from "@/lib/store/useTransactionStore";
 import { getRecentMonthOptions, getLoansByMonthKey, totalLoaned, totalExpectedReturn } from "@/lib/loan-stat";
-import { usePathname } from "next/navigation";
 
 const formatCurrency = (amount: number) => {
     return `R${amount.toLocaleString("en-ZA", {
@@ -36,19 +35,20 @@ const DeltaPill = ({ delta, percent }: Pick<DeltaResult, "delta" | "percent">) =
 
     return (
         <div
-            className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded border ${delta > 0
-                    ? "text-emerald-700 bg-emerald-50 border-emerald-100"
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${
+                delta > 0
+                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
                     : delta < 0
-                        ? "text-red-700 bg-red-50 border-red-100"
-                        : "text-zinc-600 bg-zinc-50 border-zinc-100"
-                }`}
+                        ? "border-red-500/30 bg-red-500/10 text-red-300"
+                        : "border-gray-500/40 bg-gray-500/10 text-gray-300"
+            }`}
         >
             {delta > 0 ? (
-                <MoveUpIcon className="w-4 h-4 shrink-0" strokeWidth={2} />
+                <MoveUpIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={2.5} />
             ) : delta < 0 ? (
-                <MoveDownIcon className="w-4 h-4 shrink-0" strokeWidth={2} />
+                <MoveDownIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={2.5} />
             ) : (
-                <Minus className="w-4 h-4 shrink-0" strokeWidth={2} />
+                <Minus className="h-3.5 w-3.5 shrink-0" strokeWidth={2.5} />
             )}
 
             <span>
@@ -57,18 +57,49 @@ const DeltaPill = ({ delta, percent }: Pick<DeltaResult, "delta" | "percent">) =
                     : formatCurrency(Math.abs(delta))}
             </span>
 
-            <span className="text-zinc-600 font-normal whitespace-nowrap">
+            <span className="whitespace-nowrap font-normal text-gray-400">
                 vs last month
             </span>
         </div>
     );
 };
 
+const StatCard = ({
+    title,
+    result,
+}: {
+    title: string;
+    result: DeltaResult;
+}) => (
+    <div className="relative min-w-70 flex-1 overflow-hidden rounded-xl border border-gray-800 bg-gray-700 p-5 shadow-lg">
+        
+        <p className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400">
+            {title}
+        </p>
+
+        <p className="text-3xl font-semibold tracking-tight text-white">
+            {formatCurrency(result.current)}
+        </p>
+
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+            <DeltaPill delta={result.delta} percent={result.percent} />
+            {result.previous !== null && (
+                <span className="text-xs text-gray-400">
+                    Last month:{" "}
+                    <span className="text-amber-300">
+                        {formatCurrency(result.previous)}
+                    </span>
+                </span>
+            )}
+        </div>
+    </div>
+);
+
 const STATUS_STYLES: Record<string, string> = {
-    ACTIVE: "bg-blue-50 text-blue-700 border-blue-200",
-    GRACE_PERIOD: "bg-amber-50 text-amber-700 border-amber-200",
-    DEFAULTED: "bg-red-50 text-red-700 border-red-200",
-    PAID: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    ACTIVE: "bg-blue-500/10 text-blue-300 border-blue-500/30",
+    GRACE_PERIOD: "bg-amber-500/10 text-amber-300 border-amber-500/30",
+    DEFAULTED: "bg-red-500/10 text-red-300 border-red-500/30",
+    PAID: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
 };
 
 const MONTHS_BACK = 6;
@@ -77,17 +108,6 @@ const PAGE_SIZE = 7;
 const MonthlyLoansPanel = () => {
     const { transactions, loading, fetchTransactions, runAutoStatusUpdates } =
         useTransactionStore();
-    const pathname = usePathname();
-
-    const label =
-        pathname === "/admin"
-            ? "Dashboard"
-            : pathname
-                .replace("/admin", "")
-                .split("/")
-                .filter(Boolean)
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(" / ");
 
     const monthOptions = useMemo(() => getRecentMonthOptions(MONTHS_BACK), []);
     const [selectedKey, setSelectedKey] = useState(
@@ -132,7 +152,7 @@ const MonthlyLoansPanel = () => {
         [transactions, previousKey]
     );
 
-    const comparison = useMemo(() => {
+    const comparison = useMemo<DeltaResult>(() => {
         const current = totalLoaned(loansThisMonth);
         const previous = totalLoaned(loansPreviousMonth);
 
@@ -146,7 +166,7 @@ const MonthlyLoansPanel = () => {
         return { current, previous, delta, percent };
     }, [loansThisMonth, loansPreviousMonth, previousKey]);
 
-    const returnComparison = useMemo(() => {
+    const returnComparison = useMemo<DeltaResult>(() => {
         const current = totalExpectedReturn(loansThisMonth);
         const previous = totalExpectedReturn(loansPreviousMonth);
 
@@ -161,129 +181,94 @@ const MonthlyLoansPanel = () => {
     }, [loansThisMonth, loansPreviousMonth, previousKey]);
 
     return (
-        <div className="">
-            <div className="bg-white fixed top-0 w-full">
-                <div className="pt-4">
-                    <p className='tracking-wide uppercase font-bold mb-1'>{label}</p>
-                    <div className="flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border w-fit bg-amber-50 text-amber-700 border-amber-200 mb-6">
-                        <Crown className="w-3 h-3" />
-                        Manage {label}
-                    </div>
-                </div>
-            </div>
-
-
-            <div className="mt-25 flex flex-wrap gap-1.5 p-1 bg-zinc-50 rounded-lg w-fit mb-6 overflow-x-auto">
+        <div>
+            {/* Month selector */}
+            <div className="mt-25 mb-6 flex w-fit flex-wrap gap-1.5 overflow-x-auto rounded-lg border border-gray-700 bg-gray-800 p-1">
                 {monthOptions.map((m) => (
                     <button
                         key={m.key}
                         onClick={() => setSelectedKey(m.key)}
-                        className={`px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors ${selectedKey === m.key
-                            ? "bg-black text-white"
-                            : "text-zinc-600 hover:bg-zinc-100"
-                            }`}
+                        className={`whitespace-nowrap rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
+                            selectedKey === m.key
+                                ? "bg-amber-500 text-gray-900 shadow-md shadow-amber-500/20"
+                                : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                        }`}
                     >
                         {m.label}
                     </button>
                 ))}
             </div>
 
-            <div className="flex flex-wrap gap-4 mb-6">
-                <div className="flex items-center gap-4 flex-1 min-w-70 p-4 rounded-lg border border-zinc-200 bg-zinc-50 ">
-                    <div>
-                        <p className="text-xs tracking-wide mb-1">
-                            Total Loaned
-                        </p>
-                        <div className="flex gap-2">
-                            <p className="text-2xl font-light text-zinc-900">
-                                {formatCurrency(comparison.current)}
-                            </p>
-
-                            <DeltaPill delta={comparison.delta} percent={comparison.percent} />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-4 flex-1 min-w-70 p-4 rounded-lg border border-zinc-200 bg-zinc-50 ">
-                    <div>
-                        <p className="text-xs tracking-wide mb-1">
-                            Expected Return
-                        </p>
-
-                        <div className="flex gap-2">
-                            <p className="text-2xl font-light text-zinc-900">
-                                {formatCurrency(returnComparison.current)}
-                            </p>
-
-                            <DeltaPill delta={returnComparison.delta} percent={returnComparison.percent} />
-                        </div>
-
-                    </div>
-
-                </div>
+            {/* Comparison cards */}
+            <div className="mb-6 flex flex-wrap gap-4">
+                <StatCard title="Total Loaned" result={comparison} />
+                <StatCard title="Expected Return" result={returnComparison} />
             </div>
 
-            <div className="w-full overflow-x-auto rounded-lg border border-zinc-200">
+            <div className="w-full overflow-hidden rounded-xl border border-gray-800 bg-gray-700 shadow-lg">
                 {loading && transactions.length === 0 ? (
-                    <div className="w-full py-10 text-center text-sm text-zinc-500">
+                    <div className="w-full py-12 text-center text-sm text-gray-400">
                         Loading loans...
                     </div>
                 ) : loansThisMonth.length === 0 ? (
-                    <div className="w-full py-10 text-center text-sm text-zinc-500">
+                    <div className="w-full py-12 text-center text-sm text-gray-400">
                         No loans were taken in this month.
                     </div>
                 ) : (
                     <>
-                        <table className="w-full text-xs text-left">
-                            <thead className="bg-zinc-50 text-zinc-600 border-b border-zinc-200">
-                                <tr>
-                                    <th className="px-4 py-3 font-medium">Loanee</th>
-                                    <th className="px-4 py-3 font-medium">Principal</th>
-                                    <th className="px-4 py-3 font-medium">Amount Owed</th>
-                                    <th className="px-4 py-3 font-medium">Taken At</th>
-                                    <th className="px-4 py-3 font-medium">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {paginated.map((loan) => (
-                                    <tr
-                                        key={loan.id}
-                                        className="border-b border-zinc-100 last:border-0 hover:bg-zinc-50"
-                                    >
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-3">
-                                                <div className="bg-black text-white w-7 h-7 flex items-center justify-center rounded-full text-xs shrink-0">
-                                                    {getInitials(loan.loaneeName)}
-                                                </div>
-                                                <span className="font-medium text-zinc-900">
-                                                    {loan.loaneeName}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-3 text-zinc-600">
-                                            R{loan.principle}
-                                        </td>
-                                        <td className="px-4 py-3 text-zinc-600">
-                                            R{loan.cachedAmountOwed}
-                                        </td>
-                                        <td className="px-4 py-3 text-zinc-600">
-                                            {formatDate(loan.takenAt)}
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <span
-                                                className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-medium ${STATUS_STYLES[loan.loanStatus] ??
-                                                    "bg-zinc-50 text-zinc-600 border-zinc-200"
-                                                    }`}
-                                            >
-                                                {loan.loanStatus}
-                                            </span>
-                                        </td>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-xs">
+                                <thead className="border-b border-gray-800 bg-gray-800 text-gray-400">
+                                    <tr>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Loanee</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Principal</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Amount Owed</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Taken At</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Status</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {paginated.map((loan) => (
+                                        <tr
+                                            key={loan.id}
+                                            className="border-b border-gray-600/60 transition-colors last:border-0 hover:bg-gray-600/50"
+                                        >
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-amber-300 to-amber-600 text-xs font-semibold text-gray-900">
+                                                        {getInitials(loan.loaneeName)}
+                                                    </div>
+                                                    <span className="font-bold text-white">
+                                                        {loan.loaneeName}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3 text-gray-200">
+                                                R{loan.principle}
+                                            </td>
+                                            <td className="px-4 py-3 font-medium text-amber-300">
+                                                R{loan.cachedAmountOwed}
+                                            </td>
+                                            <td className="px-4 py-3 text-gray-300">
+                                                {formatDate(loan.takenAt)}
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <span
+                                                    className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${
+                                                        STATUS_STYLES[loan.loanStatus] ??
+                                                        "border-gray-500/40 bg-gray-500/10 text-gray-300"
+                                                    }`}
+                                                >
+                                                    {loan.loanStatus}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
 
-                        <div className="flex items-center justify-between px-4 py-3 border-t border-zinc-200 text-xs text-zinc-500">
+                        <div className="flex items-center justify-between border-t border-gray-800 bg-gray-800/40 px-4 py-3 text-xs text-gray-400">
                             <span>
                                 Showing {(page - 1) * PAGE_SIZE + 1}–
                                 {Math.min(page * PAGE_SIZE, loansThisMonth.length)} of{" "}
@@ -293,19 +278,19 @@ const MonthlyLoansPanel = () => {
                                 <button
                                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                                     disabled={page === 1}
-                                    className="flex items-center justify-center w-6 h-6 rounded-full border border-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-50"
+                                    className="flex h-6 w-6 items-center justify-center rounded-full border border-gray-500 text-gray-200 transition-colors hover:border-amber-400 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-gray-500 disabled:hover:text-gray-200"
                                 >
-                                    <ChevronLeft className="w-3.5 h-3.5" />
+                                    <ChevronLeft className="h-3.5 w-3.5" />
                                 </button>
                                 <span>
-                                    Page {page} of {totalPages}
+                                    Page <span className="text-white">{page}</span> of {totalPages}
                                 </span>
                                 <button
                                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                     disabled={page === totalPages}
-                                    className="flex items-center justify-center w-6 h-6 rounded-full border border-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-50"
+                                    className="flex h-6 w-6 items-center justify-center rounded-full border border-gray-500 text-gray-200 transition-colors hover:border-amber-400 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-gray-500 disabled:hover:text-gray-200"
                                 >
-                                    <ChevronRight className="w-3.5 h-3.5" />
+                                    <ChevronRight className="h-3.5 w-3.5" />
                                 </button>
                             </div>
                         </div>

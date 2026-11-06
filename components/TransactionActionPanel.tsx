@@ -254,7 +254,7 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
     return (
         <div className=''>
             {search.trim() && (
-                <div className="mb-4 w-full sm:w-64 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3">
+                <div className="mb-4 w-full sm:w-64 rounded-lg border border-teal-200 bg-teal-50 px-4 py-3">
                     <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wide">
                         Total Owing
                     </span>
@@ -293,7 +293,7 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
 
             <div className="mb-8 flex gap-6 items-center w-full md:w-70">
                 <Input
-                    className="ml-auto h-7 text-xs rounded-full"
+                    className="px-3 py-5 text-sm border border-slate-500 rounded-lg outline-none focus:border-zinc-400 bg-slate-800 transition-colors w-70"
                     placeholder="Search name, email, phone number..."
                     value={search}
                     onChange={(e) => {
@@ -303,7 +303,8 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                 />
             </div>
 
-            <div className="w-full overflow-x-auto rounded-lg border border-zinc-200">
+
+            <div className="w-full overflow-hidden rounded-xl border border-gray-800 bg-gray-700 shadow-lg">
 
                 {filtered.length === 0 ? (
                     <div className="w-full py-10 text-center text-sm text-zinc-500">
@@ -312,7 +313,7 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                 ) : (
                     <>
                         <table className="w-full text-xs text-left ">
-                            <thead className="bg-zinc-50 text-zinc-600 border-b border-zinc-200">
+                            <thead className="border-b border-gray-800 bg-gray-800 text-gray-400">
                                 <tr>
                                     <th className="px-4 py-3 font-medium">
                                         <Checkbox
@@ -327,24 +328,24 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                                             aria-label="Mark all on this page"
                                         />
                                     </th>
-                                    <th className="px-4 py-3 font-medium">Loanee</th>
-                                    <th className="px-4 py-3 font-medium">Amount</th>
-                                    <th className="px-4 py-3 font-medium">Interest</th>
-                                    <th className="px-4 py-3 font-medium">Stage</th>
-                                    <th className="px-4 py-3 font-medium">Owing</th>
-                                    <th className="px-4 py-3 font-medium">Bank</th>
-                                    <th className="px-4 py-3 font-medium">Status</th>
-                                    <th className="px-4 py-3 font-medium">Taken At</th>
-                                    <th className="px-4 py-3 font-medium">Due At</th>
-                                    <th className="px-4 py-3 font-medium">Grace Period</th>
-                                    <th className="px-4 py-3 font-medium">Paid At</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Loanee</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Amount</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Interest</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Stage</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Owing</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Bank</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Status</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Taken At</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Due At</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Grace Period</th>
+                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Paid At</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {paginated.map((trans) => (
                                     <tr
                                         key={trans.id}
-                                        className="border-b border-zinc-100 last:border-0 hover:bg-zinc-50"
+                                        className="border-b border-slate-700 last:border-0 hover:bg-slate-700"
                                     >
                                         <td className="px-4 py-3">
                                             <Checkbox
@@ -355,17 +356,17 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                                         </td>
                                         <td className="px-4 py-3">
                                             <div className="flex gap-3">
-                                                <div className="bg-black text-white w-7 h-7 flex items-center justify-center rounded-full text-xs shrink-0">
+                                                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-amber-300 to-amber-600 text-xs font-semibold text-gray-900">
                                                     {getInitials(trans.loaneeName)}
                                                 </div>
                                                 <div className='flex flex-col gap-1'>
-                                                    <span className="font-medium text-zinc-900">
+                                                    <span className="font-medium text-white">
                                                         {trans.loaneeName}
                                                     </span>
                                                     <div className="flex gap-3 items-center ">
                                                         <Link
                                                             href={`tel:${trans.loaneePhoneNumber}`}
-                                                            className='text-blue-400 flex gap-0.5 items-center'
+                                                            className='text-blue-500 flex gap-0.5 items-center'
                                                         >
                                                             <PhoneCall className='w-3' />
                                                             Call
@@ -391,21 +392,21 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                                             </div>
 
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600">
+                                        <td className="px-4 py-3 text-amber-300">
                                             R{trans.principle}
                                         </td>
 
-                                        <td className="px-4 py-3 text-zinc-600">
+                                        <td className="px-4 py-3 text-slate-300">
                                             {trans.baseInterestRate}%
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600">
+                                        <td className="px-4 py-3 text-slate-300">
                                             {trans.interestStage}
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600">
+                                        <td className="px-4 py-3 text-green-300">
                                             R{trans.cachedAmountOwed}
                                         </td>
 
-                                        <td className="px-4 py-3 text-zinc-600">
+                                        <td className="px-4 py-3 text-slate-300">
                                             {(() => {
                                                 const bankImage = bankImageUrl.find(
                                                     (bank) =>
@@ -426,23 +427,23 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                                                 );
                                             })()}
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600">
+                                        <td className="px-4 py-3 text-slate-300">
                                             <StatusDropdown
                                                 loanId={trans.id}
                                                 status={trans.loanStatus as "ACTIVE" | "GRACE_PERIOD" | "DEFAULTED" | "PAID"}
                                                 onStatusChange={handleStatusChange}
                                             />
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600">
+                                        <td className="px-4 py-3 text-slate-300">
                                             {formatDate(trans.takenAt)}
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600">
+                                        <td className="px-4 py-3 text-slate-300">
                                             {formatDate(trans.dueDate)}
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600">
+                                        <td className="px-4 py-3 text-slate-300">
                                             {formatDate(trans.gracePeriod)}
                                         </td>
-                                        <td className="px-4 py-3 text-zinc-600">
+                                        <td className="px-4 py-3 text-slate-300">
                                             {formatDate(trans.paidAt)}
                                         </td>
                                     </tr>
@@ -450,7 +451,7 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                             </tbody>
                         </table>
 
-                        <div className="flex items-center justify-between px-6 py-3 border-t border-border text-xs text-zinc-500">
+                        <div className="flex items-center justify-between border-t border-gray-800 bg-gray-800/40 px-4 py-3 text-xs text-gray-400">
                             <span>
                                 Showing {(page - 1) * PAGE_SIZE + 1}–
                                 {Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
@@ -459,17 +460,17 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                                 <button
                                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                                     disabled={page === 1}
-                                    className="flex items-center justify-center w-6 h-6 rounded-full border border-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-50"
+                                    className="flex h-6 w-6 items-center justify-center rounded-full border border-gray-500 text-gray-200 transition-colors hover:border-amber-400 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-gray-500 disabled:hover:text-gray-200"
                                 >
                                     <ChevronLeft className="w-3.5 h-3.5" />
                                 </button>
                                 <span>
-                                    Page {page} of {totalPages}
+                                    Page <span className="text-white">{page}</span> of {totalPages}
                                 </span>
                                 <button
                                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                     disabled={page === totalPages}
-                                    className="flex items-center justify-center w-6 h-6 rounded-full border border-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-50"
+                                    className="flex h-6 w-6 items-center justify-center rounded-full border border-gray-500 text-gray-200 transition-colors hover:border-amber-400 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-gray-500 disabled:hover:text-gray-200"
                                 >
                                     <ChevronRight className="w-3.5 h-3.5" />
                                 </button>

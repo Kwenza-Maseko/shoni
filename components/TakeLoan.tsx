@@ -116,9 +116,10 @@ const TakeLoan = ({ id, name }: TakeLoanProps) => {
       }}
 
     >
-      <DialogTrigger className="flex justify-center items-center w-5 h-5 rounded bg-black hover:bg-black/70 transition-colors"
+      <DialogTrigger
+        className="cursor-pointer"
         aria-label={`Grant ${name}`}>
-        <Plus className="w-3 text-white" />
+        <Plus className="w-4.5 text-slate-100" />
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-md">

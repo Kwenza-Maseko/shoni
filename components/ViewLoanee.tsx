@@ -54,10 +54,10 @@ const ViewLoanee = ({
         <Dialog open={open} onOpenChange={setOpen}>
             <button
                 onClick={() => setOpen(true)}
-                className="flex justify-center items-center w-5 h-5 rounded bg-amber-100 hover:bg-amber-200 transition-colors"
+                className="cursor-pointer"
                 aria-label={`View ${name}`}
             >
-                <Eye className="w-3 h-3 text-amber-700" />
+                <Eye className="w-4.5 text-amber-400" />
             </button>
 
             <DialogContent className="sm:max-w-md">

@@ -37,7 +37,7 @@ export const sidebarLinks = [
   },
   {
     id: 3,
-    name: "Manual Transaction",
+    name: "loanees",
     url: "/loanees",
     icon: Users,
   },
@@ -52,12 +52,6 @@ export const sidebarLinks = [
     name: "categories",
     url: "/categories",
     icon: Wallet,
-  },
-  {
-    id: 5,
-    name: "settings",
-    url: "/settings",
-    icon: Settings,
   },
 ];
 

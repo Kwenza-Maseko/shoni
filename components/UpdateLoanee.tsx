@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
-import { PenIcon } from 'lucide-react';
+import { Pen, PenIcon } from 'lucide-react';
 import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -69,10 +69,10 @@ const UpdateLoanee = ({ id, name, phoneNumber }: UpdateLoaneeProps) => {
         >
             <button
                 onClick={() => setOpen(true)}
-                className="flex justify-center items-center w-5 h-5 rounded bg-green-100 hover:bg-green-200 transition-colors"
+                className="cursor-pointer"
                 aria-label={`View ${name}`}
             >
-                <PenIcon className="w-3 text-green-700" />
+                <Pen className="w-4 text-green-400" />
             </button>
 
             <DialogContent className="sm:max-w-md">

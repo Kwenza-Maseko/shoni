@@ -40,11 +40,13 @@ const chartConfig = {
 
 export function Profit({ totalProfit, monthlyData }: ProfitProps) {
   return (
-    <div  className="w-full">
-      <Card>
+    <div className="w-full">
+      <Card className="border border-gray-800 bg-gray-700 p-4 shadow-lg">
         <CardHeader>
-          <CardTitle>Total Profit Made</CardTitle>
-          <CardDescription>{formatCurrency(totalProfit)}</CardDescription>
+          <CardTitle className="text-white">Total Profit Made</CardTitle>
+          <CardDescription className="text-green-500">
+            {formatCurrency(totalProfit)}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <ChartContainer config={chartConfig}>
@@ -52,10 +54,16 @@ export function Profit({ totalProfit, monthlyData }: ProfitProps) {
               accessibilityLayer
               data={monthlyData}
               layout="vertical"
-              margin={{
-                left: -20,
-              }}
+              margin={{ left: -20, right: 8 }}
+              barCategoryGap={14}
             >
+              <defs>
+                <linearGradient id="profitGradient" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#3b82f6" />
+                  <stop offset="100%" stopColor="#22d3ee" />
+                </linearGradient>
+              </defs>
+
               <XAxis type="number" dataKey="profit" hide />
               <YAxis
                 dataKey="month"
@@ -63,13 +71,28 @@ export function Profit({ totalProfit, monthlyData }: ProfitProps) {
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
+                tick={{ fill: "#ffffff", fontSize: 12 }}
                 tickFormatter={(value) => value.slice(0, 3)}
               />
               <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel />}
+                cursor={{ fill: "rgba(255,255,255,0.05)", radius: 6 }}
+                content={
+                  <ChartTooltipContent
+                    hideLabel
+                    className="border-gray-700 bg-gray-800 text-white"
+                  />
+                }
               />
-              <Bar dataKey="profit" fill="var(--color-profit)" radius={5} />
+              <Bar
+                dataKey="profit"
+                fill="url(#profitGradient)"
+                barSize={14}
+                radius={[0, 4, 4, 0]}
+                isAnimationActive
+                animationDuration={1200}
+                animationEasing="ease-out"
+                style={{ filter: "drop-shadow(0 0 6px rgba(59,130,246,0.55))" }}
+              />
             </BarChart>
           </ChartContainer>
         </CardContent>

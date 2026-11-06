@@ -1,9 +1,18 @@
 "use client";
 
-import { ChevronUp, LogOut } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { ChevronUp, Crown, LogOut, Settings } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
+import Messages from "./Messages";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import { sidebarLinks } from "@/constants";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface NavbarProps {
     name: string;
@@ -14,66 +23,115 @@ interface NavbarProps {
 const getInitials = (name: string) => {
     return name.charAt(0).toUpperCase();
 };
-const PER_PAGE = 10
 
 const Navbar = ({ name, email, role }: NavbarProps) => {
-    const [open, setOpen] = useState(false);
-    const ref = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            if (ref.current && !ref.current.contains(e.target as Node)) {
-                setOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    
+    const pathname = usePathname();
+    const [isOpened, setIsOpened] = useState(true);
+    const label =
+        pathname === "/"
+            ? "Overview"
+            : pathname
+                .replace("/", "")
+                .split("/")
+                .filter(Boolean)
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" / ");
 
     return (
-        <div className="fixed right-6 top-5 z-50" ref={ref}>
-            <div
-                className="rounded-full p-0.5 w-14 bg-zinc-200 flex justify-between gap-3 items-center shadow-md cursor-pointer border border-zinc-300 "
-                onClick={() => setOpen((prev) => !prev)}
-            >
-                <div className="bg-amber-500 text-black w-6 h-6 flex items-center justify-center rounded-full p-2 text-xs">
-                    <p>{getInitials(name)}</p>
+        <nav className="fixed left-0 right-0 top-0 z-50 flex justify-between items-center gap-4 border-b border-slate-800 bg-slate-950 px-6">
+            <div className="flex gap-6 items-center">
+                <div className="flex gap-3 items-center">
+                    <Link
+                        href={"/"}
+                        className="text-lg font-black">Shoni</Link>
+
+                    <div className="rounded-full bg-slate-700 px-2 py-0.5 text-xs font-light">
+                        v1.0
+                    </div>
                 </div>
-                <ChevronUp
-                    className={`w-4 h-4 pr-1 transition-transform ${open ? "" : "rotate-180"}`}
-                />
+
+                <div className="flex items-center gap-1.5 text-[8pt] font-medium  rounded-full border w-fit bg-amber-50 text-amber-700 border-amber-200 px-2 py-0.5">
+                    <Crown className="w-3 h-3" />
+                    Manage {label}
+                </div>
             </div>
 
-            {open && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border border-zinc-100 py-1 z-200">
-                    <div className="px-3 py-2 border-b border-zinc-100 space-y-1">
-                        <p className="text-sm font-medium text-zinc-900 truncate">{name}</p>
-                        <p className="text-xs text-zinc-500 truncate">{email}</p>
-                        <p className="text-xs text-zinc-400 capitalize">{role}</p>
-                    </div>
+            <div className="flex gap-8 items-center">
+                <div className="flex gap-8 ">
+                    {sidebarLinks.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                            <div className="flex gap-2"
+                                key={item.id}>
+                                <Link
+                                    href={item.url}
+                                    aria-current={
+                                        pathname.startsWith(item.url)
+                                            ? "page"
+                                            : undefined
+                                    }
+                                    className={cn(
+                                        "flex items-center gap-2 mb-1 capitalize transition-colors w-full py-4 ",
+                                        pathname === item.url
+                                            ? "border-b-2 border-blue-400 font-bold text-blue-400"
+                                            : "text-slate-100 hover:text-gray-500 "
+                                    )}
+                                >
+                                    <Icon className="w-4 h-4 " />
+                                    {item.name}
+                                </Link>
+                            </div>
 
-                    <div className="rounded-md bg-white p-3 w-full">
-                        <Link
-                            href={"/admin/manage-account"}
-                        >
-                            Manage Account
-                        </Link>
-
-                    </div>
-
-
-                    <button
-                        onClick={() => signOut()}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-zinc-50"
-                    >
-                        <LogOut className="w-4 h-4" />
-                        Log out
-                    </button>
+                        );
+                    })}
                 </div>
-            )}
-        </div>
+
+                <div className="flex gap-3 items-center">
+                    <Collapsible>
+                        <CollapsibleTrigger>
+                            <div className="bg-blue-500 text-white w-8 h-8 flex items-center justify-center rounded-full p-2 text-xs font-semibold">
+                                <p>{getInitials(name)}</p>
+                            </div>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                            <div className="absolute right-0 mt-2 w-60 bg-white rounded-md shadow-lg border border-zinc-100 py-1 z-200">
+                                <div className="px-3 py-2 border-b border-zinc-100 space-y-1">
+                                    <p className="text-sm font-medium text-zinc-900 truncate">{name}</p>
+                                    <p className="text-xs text-zinc-500 truncate">{email}</p>
+                                    <p className="text-xs text-zinc-400 capitalize">{role}</p>
+                                </div>
+
+                                <div className="rounded-md bg-white p-3 w-full">
+                                    <Link
+                                        href={"/admin/manage-account"}
+                                    >
+                                        Manage Account
+                                    </Link>
+
+                                </div>
+
+
+                                <button
+                                    onClick={() => signOut()}
+                                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-zinc-50"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                    Log out
+                                </button>
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
+
+                    <Link
+                        href={"/settings"}
+                        className="rounded-full border border-teal-200 w-8 h-8 flex justify-center items-center"
+                    >
+                        <Settings className="w-4" />
+                    </Link>
+                </div>
+            </div>
+
+        </nav>
     );
 };
 

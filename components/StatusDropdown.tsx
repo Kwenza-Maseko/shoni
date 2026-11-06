@@ -16,7 +16,6 @@ const STATUS_STYLES: Record<LoanStatusValue, string> = {
 interface StatusDropdownProps {
     loanId: string;
     status: LoanStatusValue;
-    // Called after a successful update so the parent can update its local state
     onStatusChange: (loanId: string, newStatus: LoanStatusValue, paidAt: string | null) => void;
 }
 
@@ -57,8 +56,6 @@ const StatusDropdown = ({ loanId, status, onStatusChange }: StatusDropdownProps)
 
             onStatusChange(loanId, newStatus, data.loan.paidAt);
         } catch (err) {
-            console.error(err);
-            // Keep it simple — swap for a toast if you have one wired up
             alert("Could not update status. Please try again.");
         } finally {
             setSaving(false);
@@ -66,7 +63,7 @@ const StatusDropdown = ({ loanId, status, onStatusChange }: StatusDropdownProps)
         }
     };
 
-    // PAID loans are a terminal state here — no dropdown, just the badge
+   
     if (status === "PAID") {
         return (
             <span
@@ -83,7 +80,7 @@ const StatusDropdown = ({ loanId, status, onStatusChange }: StatusDropdownProps)
                 type="button"
                 onClick={() => setOpen((prev) => !prev)}
                 disabled={saving}
-                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-xs font-medium disabled:opacity-60 ${STATUS_STYLES[status]}`}
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[8pt] font-medium disabled:opacity-60 ${STATUS_STYLES[status]}`}
             >
                 {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : status}
                 {!saving && <ChevronDown className="w-3 h-3" />}
@@ -95,7 +92,7 @@ const StatusDropdown = ({ loanId, status, onStatusChange }: StatusDropdownProps)
                         <button
                             key={option}
                             onClick={() => handleSelect(option)}
-                            className={`w-full text-left px-3 py-1.5 text-xs hover:bg-zinc-50 ${
+                            className={`w-full text-left px-3 py-1.5 text-[8pt] hover:bg-zinc-50 ${
                                 option === status ? "font-semibold text-zinc-900" : "text-zinc-600"
                             }`}
                         >
