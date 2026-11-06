@@ -72,7 +72,7 @@ const Navbar = ({ name, email, role }: NavbarProps) => {
                                             : undefined
                                     }
                                     className={cn(
-                                        "flex items-center gap-2 mb-1 capitalize transition-colors w-full py-4 ",
+                                        "flex items-center gap-2 capitalize transition-colors w-full py-4 ",
                                         pathname === item.url
                                             ? "border-b-2 border-blue-400 font-bold text-blue-400"
                                             : "text-slate-100 hover:text-gray-500 "
@@ -143,8 +143,6 @@ const Navbar = ({ name, email, role }: NavbarProps) => {
 
                         {isOpened && (
                             <div className="md:hidden gap-8 block fixed top-0 bottom-0 right-0 left-0 bg-slate-900 p-4">
-
-
                                 {sidebarLinks.map((item) => {
                                     const Icon = item.icon;
                                     return (
@@ -158,13 +156,13 @@ const Navbar = ({ name, email, role }: NavbarProps) => {
                                                         : undefined
                                                 }
                                                 className={cn(
-                                                    "flex items-center gap-2 capitalize transition-colors w-full py-2 ",
+                                                    "flex items-center gap-2 capitalize transition-colors w-full py-2 text-lg mb-3",
                                                     pathname === item.url
                                                         ? "border-b-2 border-blue-400 font-bold text-blue-400"
                                                         : "text-slate-100 hover:text-gray-500 "
                                                 )}
                                             >
-                                                <Icon className="w-4 h-4 " />
+                                                <Icon className="w-5 h-5 " />
                                                 {item.name}
                                             </Link>
                                         </div>
