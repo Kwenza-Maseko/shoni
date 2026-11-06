@@ -51,7 +51,7 @@ const Navbar = ({ name, email, role }: NavbarProps) => {
 
                 <div className="flex items-center gap-1.5 text-[8pt] font-medium  rounded-full border w-fit bg-amber-50 text-amber-700 border-amber-200 px-2 py-0.5">
                     <Crown className="w-3 h-3" />
-                    Manage {label}
+                    <span className="hidden md:block">Manage</span>  {label}
                 </div>
             </div>
 
