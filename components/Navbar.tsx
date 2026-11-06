@@ -43,8 +43,9 @@ const Navbar = ({ name, email, role }: NavbarProps) => {
                     <Link
                         href={"/"}
                         className="text-lg font-black">Shoni</Link>
+                    <div className="w-1 h-1 rounded-full bg-slate-400" />
 
-                    <div className="rounded-full bg-slate-700 px-2 py-0.5 text-xs font-light">
+                    <div className="rounded-full bg-slate-700 px-2 py-0.5 text-xs font-light hidden md:block">
                         v1.0
                     </div>
                 </div>
