@@ -1,7 +1,13 @@
 import type { NextAuthConfig } from "next-auth"
 
+const SESSION_SECONDS = 2 * 60 * 60
+
 export const authConfig = {
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: SESSION_SECONDS,
+    updateAge: SESSION_SECONDS,
+  },
   pages: { signIn: "/sign-in" },
   providers: [],
   callbacks: {
@@ -10,6 +16,14 @@ export const authConfig = {
         token.id = user.id
         token.name = user.name
         token.role = user.role
+        token.loginAt = Date.now()
+      }
+
+      if (
+        !token.loginAt ||
+        Date.now() - (token.loginAt as number) > SESSION_SECONDS * 1000
+      ) {
+        return null
       }
       return token
     },
