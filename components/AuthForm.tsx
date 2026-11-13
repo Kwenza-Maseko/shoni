@@ -70,7 +70,7 @@ const AuthForm = <T extends FieldValues>({
                 <h3 className="font-medium text-blue-500 uppercase">
                     {isSignIn ? "Sign in" : "Sign up"}
                 </h3>
-                <p className="text-center text-blue-500 text-lg font-semibold tracking-tight">
+                <p className="text-center text-white text-xl font-semibold tracking-tight">
                     {isSignIn ? "Welcome to Shoni" : "Create an account with us"}
                 </p>
             </div>

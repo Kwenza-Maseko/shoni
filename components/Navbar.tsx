@@ -12,6 +12,7 @@ import { sidebarLinks } from "@/constants";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import Messages from "./Messages";
 
 interface NavbarProps {
     name: string;
@@ -44,7 +45,6 @@ const Navbar = ({ name, email, role }: NavbarProps) => {
                         href={"/"}
                         className="text-lg font-black">Shoni</Link>
                     <div className="w-1 h-1 rounded-full bg-slate-400" />
-
                     <div className="rounded-full bg-slate-700 px-2 py-0.5 text-xs font-light hidden md:block">
                         v1.0
                     </div>
@@ -57,7 +57,6 @@ const Navbar = ({ name, email, role }: NavbarProps) => {
             </div>
 
             <div className="flex gap-8 items-center">
-
 
                 <div className="md:flex gap-8 hidden">
                     {sidebarLinks.map((item) => {
@@ -78,8 +77,9 @@ const Navbar = ({ name, email, role }: NavbarProps) => {
                                             ? "border-b-2 border-blue-400 font-bold text-blue-400"
                                             : "text-slate-100 hover:text-gray-500 "
                                     )}
-                                >
+                                >{/*
                                     <Icon className="w-4 h-4 " />
+                                */}
                                     {item.name}
                                 </Link>
                             </div>
@@ -89,8 +89,9 @@ const Navbar = ({ name, email, role }: NavbarProps) => {
                 </div>
 
 
-
                 <div className="flex gap-3 items-center">
+                    <Messages />
+
                     <Collapsible>
                         <CollapsibleTrigger>
                             <div className="bg-blue-500 text-white w-8 h-8 flex items-center justify-center rounded-full p-2 text-xs font-semibold">
@@ -139,8 +140,6 @@ const Navbar = ({ name, email, role }: NavbarProps) => {
                         <div className="w-4 h-0.5 bg-white" />
                         <div className="w-4 h-0.5 bg-white" />
                         <div className="w-4 h-0.5 bg-white" />
-
-
 
                         {isOpened && (
                             <div className="md:hidden gap-8 block fixed top-0 bottom-0 right-0 left-0 bg-slate-900 p-4">

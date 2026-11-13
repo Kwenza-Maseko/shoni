@@ -24,6 +24,12 @@ export const loanStatusEnum = pgEnum("loan_status", [
     "PAID",
 ]);
 
+export const notificationTypeEnum = pgEnum("notification_type", [
+    "UPCOMING",
+    "GRACE_PERIOD",
+    "DEFAULTED",
+]);
+
 export const users = pgTable("users", {
     id: uuid("id").notNull().primaryKey().defaultRandom(),
     fullName: varchar("full_name", { length: 100 }).notNull(),
@@ -85,9 +91,6 @@ export const loans = pgTable("loans", {
         .defaultNow()
         .notNull(),
 });
-
-
-
 
 export const payments = pgTable("payments", {
     id: uuid("id").notNull().primaryKey().defaultRandom(),
@@ -190,6 +193,46 @@ export const loanStageHistoryRelations = relations(
         loan: one(loans, {
             fields: [loanStageHistory.loanId],
             references: [loans.id],
+        }),
+    })
+);
+
+export const notifications = pgTable("notifications", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    loanId: uuid("loan_id")
+        .notNull()
+        .references(() => loans.id, { onDelete: "cascade" }),
+    recipientId: uuid("recipient_id")
+        .notNull()
+        .references(() => users.id, { onDelete: "cascade" }),
+    type: notificationTypeEnum("type").notNull(),
+    title: varchar("title", { length: 150 }).notNull(),
+    message: text("message").notNull(),
+    isRead: integer("is_read").notNull().default(0),
+    createdAt: timestamp("created_at", {
+        withTimezone: true,
+    })
+        .defaultNow()
+        .notNull(),
+},
+    (table) => ({
+        uniqueLoanNotification: unique(
+            "notifications_loan_type_unique"
+        ).on(table.loanId, table.type),
+    })
+);
+
+export const notificationsRelations = relations(
+    notifications,
+    ({ one }) => ({
+        loan: one(loans, {
+            fields: [notifications.loanId],
+            references: [loans.id],
+        }),
+
+        recipient: one(users, {
+            fields: [notifications.recipientId],
+            references: [users.id],
         }),
     })
 );
