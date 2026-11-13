@@ -39,6 +39,7 @@ export const users = pgTable("users", {
     role: userRoleEnum("role").default("LOANEE").notNull(),
     bankId: uuid("bankId")
         .references(() => bank.id),
+    emailVerified: timestamp("email_verified"),
     lastLogin: timestamp("last_login", { withTimezone: true }).defaultNow(),
     createdAt: timestamp("created_at", { withTimezone: true })
         .defaultNow()
@@ -236,3 +237,22 @@ export const notificationsRelations = relations(
         }),
     })
 );
+
+export const loginCodes = pgTable("login_codes", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+        .notNull()
+        .references(() => users.id, { onDelete: "cascade" }),
+    codeHash: text("code_hash").notNull(),
+    purpose: text("purpose").notNull().default("login"),
+    expiresAt: timestamp("expires_at").notNull(),
+    attempts: integer("attempts").notNull().default(0),
+    consumedAt: timestamp("consumed_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+})
+
+export const rateLimits = pgTable("rate_limits", {
+    key: text("key").primaryKey(),
+    count: integer("count").notNull(),
+    resetAt: timestamp("reset_at", { withTimezone: true }).notNull(),
+})

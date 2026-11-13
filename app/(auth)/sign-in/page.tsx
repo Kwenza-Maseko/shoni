@@ -1,6 +1,6 @@
 'use client'
 import { Suspense } from "react"
-import { signInWithCredentials } from '@/lib/auth/auth'
+import { signInWithCredentials, requestLoginCode } from '@/lib/auth/auth'
 import { signInSchema } from '@/lib/validations'
 import AuthForm from "@/components/AuthForm"
 
@@ -10,11 +10,10 @@ function SignInContent() {
       <AuthForm
         type="SIGNIN"
         schema={signInSchema}
-        defaultValues={{
-          email: "",
-          password: ""
-        }}
-        onSubmit={signInWithCredentials}
+        defaultValues={{ email: "", password: "" }}
+        onSubmit={requestLoginCode}
+        onVerify={(data, code) => signInWithCredentials({ ...data, code })}
+        onResend={requestLoginCode}
       />
     </div>
   )

@@ -2,8 +2,12 @@ import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { db } from "@/database/drizzle"
 import { eq } from "drizzle-orm"
-import { compare } from "bcryptjs"
+import { compare, hashSync } from "bcryptjs"
 import { users } from "@/database/schema"
+import { verifyLoginCode } from "@/lib/login-code"
+import { getClientIp, rateLimit } from "@/lib/rate-limiting" 
+
+const DUMMY_HASH = hashSync("not-a-real-password", 12)
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
@@ -13,29 +17,41 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        code: { label: "Code", type: "text" },
       },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null
 
-        const user = await db
+      async authorize(credentials) {
+        const email = credentials?.email?.toString().trim().toLowerCase()
+        const password = credentials?.password?.toString()
+        const code = credentials?.code?.toString()
+        if (!email || !password || !code) return null
+
+        const ip = await getClientIp()
+        const [byEmail, byIp] = await Promise.all([
+          rateLimit(`auth:email:${email}`, 10, 900),
+          rateLimit(`auth:ip:${ip}`, 20, 900),
+        ])
+        if (!byEmail.ok || !byIp.ok) return null
+
+        const [user] = await db
           .select()
           .from(users)
-          .where(eq(users.email, credentials.email.toString()))
+          .where(eq(users.email, email))
           .limit(1)
 
-        if (!user.length) return null
+        const valid = await compare(password, user?.password ?? DUMMY_HASH)
+        if (!user || !valid) return null
 
-        const isPasswordValid = await compare(
-          credentials.password.toString(),
-          user[0].password
-        )
-        if (!isPasswordValid) return null
+        if (!user.emailVerified) return null
+
+        const codeOk = await verifyLoginCode(user.id.toString(), "login", code)
+        if (!codeOk) return null
 
         return {
-          id: user[0].id.toString(),
-          email: user[0].email,
-          name: user[0].fullName,
-          role: user[0].role ?? "user",
+          id: user.id.toString(),
+          email: user.email,
+          name: user.fullName,
+          role: user.role ?? "user",
         }
       },
     }),
@@ -59,4 +75,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session
     },
   },
-});
+})
