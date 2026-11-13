@@ -6,11 +6,12 @@ import { compare, hashSync } from "bcryptjs"
 import { users } from "@/database/schema"
 import { verifyLoginCode } from "@/lib/login-code"
 import { getClientIp, rateLimit } from "@/lib/rate-limiting" 
+import { authConfig } from "./auth.config"
 
 const DUMMY_HASH = hashSync("not-a-real-password", 12)
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  session: { strategy: "jwt" },
+  ...authConfig,
   providers: [
     CredentialsProvider({
       name: "User Credentials",
@@ -57,22 +58,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   pages: { signIn: "/sign-in" },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id
-        token.name = user.name
-        token.role = user.role
-      }
-      return token
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string
-        session.user.name = token.name as string
-        session.user.role = token.role as string
-      }
-      return session
-    },
-  },
+  
 })

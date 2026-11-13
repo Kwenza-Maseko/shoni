@@ -1,12 +1,12 @@
-import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import { db } from "@/database/drizzle";
 import { settings } from "@/database/schema";
 import { and, eq } from "drizzle-orm";
 import { UNLOCK_COOKIE_NAME } from "@/lib/settings-pages";
+import NextAuth from "next-auth"
+import { authConfig } from "./auth.config"
 
-
-
+const { auth } = NextAuth(authConfig)
 
 export default auth(async (req) => {
     const { nextUrl } = req;
