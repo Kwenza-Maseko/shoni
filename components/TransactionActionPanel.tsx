@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Input } from './ui/input';
 import { ChevronLeft, ChevronRight, PhoneCall } from 'lucide-react';
 import StatusDropdown from './StatusDropdown';
@@ -70,7 +70,6 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
 
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
-    // remove: const [marked, setMarked] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
     const toggleSelected = (id: string, checked: boolean) => {
@@ -303,177 +302,180 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                 />
             </div>
 
-
             <div className="w-full overflow-hidden rounded-xl border border-gray-800 bg-gray-700 shadow-lg">
-
                 {filtered.length === 0 ? (
                     <div className="w-full py-10 text-center text-sm text-zinc-500">
                         No transactions match your search.
                     </div>
                 ) : (
                     <>
-                        <table className="w-full text-xs text-left ">
-                            <thead className="border-b border-gray-800 bg-gray-800 text-gray-400">
-                                <tr>
-                                    <th className="px-4 py-3 font-medium">
-                                        <Checkbox
-                                            checked={paginated.length > 0 && paginated.every((t) => selectedIds.has(t.id))}
-                                            onCheckedChange={(checked) =>
-                                                setSelectedIds((prev) => {
-                                                    const next = new Set(prev);
-                                                    paginated.forEach((t) => (checked === true ? next.add(t.id) : next.delete(t.id)));
-                                                    return next;
-                                                })
-                                            }
-                                            aria-label="Mark all on this page"
-                                        />
-                                    </th>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Loanee</th>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Amount</th>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Interest</th>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Stage</th>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Owing</th>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Bank</th>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Status</th>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Taken At</th>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Due At</th>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Grace Period</th>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Paid At</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {paginated.map((trans) => (
-                                    <tr
-                                        key={trans.id}
-                                        className="border-b border-slate-700 last:border-0 hover:bg-slate-700"
-                                    >
-                                        <td className="px-4 py-3">
+                        <div className="overflow-x-auto">
+                            <table className="w-full min-w-300 text-xs text-left">
+                                <thead className="border-b border-gray-800 bg-gray-800 text-gray-400">
+                                    <tr>
+                                        <th className="px-4 py-3 font-medium">
                                             <Checkbox
-                                                checked={selectedIds.has(trans.id)}
-                                                onCheckedChange={(checked) => toggleSelected(trans.id, checked === true)}
-                                                aria-label={`Mark ${trans.loaneeName}`}
+                                                checked={paginated.length > 0 && paginated.every((t) => selectedIds.has(t.id))}
+                                                onCheckedChange={(checked) =>
+                                                    setSelectedIds((prev) => {
+                                                        const next = new Set(prev);
+                                                        paginated.forEach((t) => (checked === true ? next.add(t.id) : next.delete(t.id)));
+                                                        return next;
+                                                    })
+                                                }
+                                                aria-label="Mark all on this page"
                                             />
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex gap-3">
-                                                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-amber-300 to-amber-600 text-xs font-semibold text-gray-900">
-                                                    {getInitials(trans.loaneeName)}
-                                                </div>
-                                                <div className='flex flex-col gap-1'>
-                                                    <span className="font-medium text-white">
-                                                        {trans.loaneeName}
-                                                    </span>
-                                                    <div className="flex gap-3 items-center ">
-                                                        <Link
-                                                            href={`tel:${trans.loaneePhoneNumber}`}
-                                                            className='text-blue-500 flex gap-0.5 items-center'
-                                                        >
-                                                            <PhoneCall className='w-3' />
-                                                            Call
-                                                        </Link>
-                                                        <a
-                                                            href={handleWhatsAppNumber(trans.loaneePhoneNumber)}
-                                                            target="_blank" rel="noopener noreferrer"
-                                                            className='text-green-400 flex gap-0.5 items-center'
-                                                        >
-                                                            <svg
-                                                                role="img"
-                                                                viewBox="0 0 24 24"
-                                                                width="12"
-                                                                height="12"
-                                                                fill={`#${siWhatsapp.hex}`}
-                                                            >
-                                                                <path d={siWhatsapp.path} />
-                                                            </svg>
-                                                            WhatsApp
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </td>
-                                        <td className="px-4 py-3 text-amber-300">
-                                            R{trans.principle}
-                                        </td>
-
-                                        <td className="px-4 py-3 text-slate-300">
-                                            {trans.baseInterestRate}%
-                                        </td>
-                                        <td className="px-4 py-3 text-slate-300">
-                                            {trans.interestStage}
-                                        </td>
-                                        <td className="px-4 py-3 text-green-300">
-                                            R{trans.cachedAmountOwed}
-                                        </td>
-
-                                        <td className="px-4 py-3 text-slate-300">
-                                            {(() => {
-                                                const bankImage = bankImageUrl.find(
-                                                    (bank) =>
-                                                        bank.bankName.toLowerCase() ===
-                                                        trans.bankName?.toLowerCase()
-                                                );
-
-                                                return (
-                                                    <div className="flex items-center gap-2">
-                                                        {bankImage && (
-                                                            <img
-                                                                src={bankImage.imageUrl}
-                                                                alt={trans.bankName ?? "Bank"}
-                                                                className="w-14 h-14 object-contain rounded"
-                                                            />
-                                                        )}
-                                                    </div>
-                                                );
-                                            })()}
-                                        </td>
-                                        <td className="px-4 py-3 text-slate-300">
-                                            <StatusDropdown
-                                                loanId={trans.id}
-                                                status={trans.loanStatus as "ACTIVE" | "GRACE_PERIOD" | "DEFAULTED" | "PAID"}
-                                                onStatusChange={handleStatusChange}
-                                            />
-                                        </td>
-                                        <td className="px-4 py-3 text-slate-300">
-                                            {formatDate(trans.takenAt)}
-                                        </td>
-                                        <td className="px-4 py-3 text-slate-300">
-                                            {formatDate(trans.dueDate)}
-                                        </td>
-                                        <td className="px-4 py-3 text-slate-300">
-                                            {formatDate(trans.gracePeriod)}
-                                        </td>
-                                        <td className="px-4 py-3 text-slate-300">
-                                            {formatDate(trans.paidAt)}
-                                        </td>
+                                        </th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Loanee</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Amount</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Interest</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Stage</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Owing</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Bank</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Status</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Taken At</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Due At</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Grace Period</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Paid At</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {paginated.map((trans) => (
+                                        <tr
+                                            key={trans.id}
+                                            className="border-b border-slate-700 last:border-0 hover:bg-slate-700"
+                                        >
+                                            <td className="px-4 py-3">
+                                                <Checkbox
+                                                    checked={selectedIds.has(trans.id)}
+                                                    onCheckedChange={(checked) => toggleSelected(trans.id, checked === true)}
+                                                    aria-label={`Mark ${trans.loaneeName}`}
+                                                />
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex gap-3">
+                                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-amber-300 to-amber-600 text-xs font-semibold text-gray-900">
+                                                        {getInitials(trans.loaneeName)}
+                                                    </div>
+                                                    <div className='flex flex-col gap-1'>
+                                                        <span className="font-medium text-white">
+                                                            {trans.loaneeName}
+                                                        </span>
+                                                        <div className="flex gap-3 items-center ">
+                                                            <Link
+                                                                href={`tel:${trans.loaneePhoneNumber}`}
+                                                                className='text-blue-500 flex gap-0.5 items-center'
+                                                            >
+                                                                <PhoneCall className='w-3' />
+                                                                Call
+                                                            </Link>
+                                                            <a
+                                                                href={handleWhatsAppNumber(trans.loaneePhoneNumber)}
+                                                                target="_blank" rel="noopener noreferrer"
+                                                                className='text-green-400 flex gap-0.5 items-center'
+                                                            >
+                                                                <svg
+                                                                    role="img"
+                                                                    viewBox="0 0 24 24"
+                                                                    width="12"
+                                                                    height="12"
+                                                                    fill={`#${siWhatsapp.hex}`}
+                                                                >
+                                                                    <path d={siWhatsapp.path} />
+                                                                </svg>
+                                                                WhatsApp
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
+                                            </td>
+                                            <td className="px-4 py-3 text-amber-300">
+                                                R{trans.principle}
+                                            </td>
+
+                                            <td className="px-4 py-3 text-slate-300">
+                                                {trans.baseInterestRate}%
+                                            </td>
+                                            <td className="px-4 py-3 text-slate-300">
+                                                {trans.interestStage}
+                                            </td>
+                                            <td className="px-4 py-3 text-green-300">
+                                                R{trans.cachedAmountOwed}
+                                            </td>
+
+                                            <td className="px-4 py-3 text-slate-300">
+                                                {(() => {
+                                                    const bankImage = bankImageUrl.find(
+                                                        (bank) =>
+                                                            bank.bankName.toLowerCase() ===
+                                                            trans.bankName?.toLowerCase()
+                                                    );
+
+                                                    return (
+                                                        <div className="flex items-center gap-2">
+                                                            {bankImage && (
+                                                                <img
+                                                                    src={bankImage.imageUrl}
+                                                                    alt={trans.bankName ?? "Bank"}
+                                                                    className="w-14 h-14 object-contain rounded"
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })()}
+                                            </td>
+                                            <td className="px-4 py-3 text-slate-300">
+                                                <StatusDropdown
+                                                    loanId={trans.id}
+                                                    status={trans.loanStatus as "ACTIVE" | "GRACE_PERIOD" | "DEFAULTED" | "PAID"}
+                                                    onStatusChange={handleStatusChange}
+                                                />
+                                            </td>
+                                            <td className="px-4 py-3 text-slate-300">
+                                                {formatDate(trans.takenAt)}
+                                            </td>
+                                            <td className="px-4 py-3 text-slate-300">
+                                                {formatDate(trans.dueDate)}
+                                            </td>
+                                            <td className="px-4 py-3 text-slate-300">
+                                                {formatDate(trans.gracePeriod)}
+                                            </td>
+                                            <td className="px-4 py-3 text-slate-300">
+                                                {formatDate(trans.paidAt)}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                         <div className="flex items-center justify-between border-t border-gray-800 bg-gray-800/40 px-4 py-3 text-xs text-gray-400">
-                            <span>
+                            <span className="whitespace-nowrap">
                                 Showing {(page - 1) * PAGE_SIZE + 1}–
                                 {Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
                             </span>
-                            <div className="flex items-center gap-2">
+
+                            <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
                                 <button
                                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                                     disabled={page === 1}
-                                    className="flex h-6 w-6 items-center justify-center rounded-full border border-gray-500 text-gray-200 transition-colors hover:border-amber-400 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-gray-500 disabled:hover:text-gray-200"
+                                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-500 text-gray-200 transition-colors hover:border-amber-400 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40"
                                 >
-                                    <ChevronLeft className="w-3.5 h-3.5" />
+                                    <ChevronLeft className="w-4 h-4" />
                                 </button>
-                                <span>
+
+                                <span className="whitespace-nowrap">
                                     Page <span className="text-white">{page}</span> of {totalPages}
                                 </span>
+
                                 <button
                                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                     disabled={page === totalPages}
-                                    className="flex h-6 w-6 items-center justify-center rounded-full border border-gray-500 text-gray-200 transition-colors hover:border-amber-400 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-gray-500 disabled:hover:text-gray-200"
+                                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-500 text-gray-200 transition-colors hover:border-amber-400 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40"
                                 >
-                                    <ChevronRight className="w-3.5 h-3.5" />
+                                    <ChevronRight className="w-4 h-4" />
                                 </button>
+
                             </div>
                         </div>
                     </>

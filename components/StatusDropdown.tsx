@@ -1,9 +1,23 @@
+
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { ChevronDown, Loader2 } from "lucide-react";
 
-const STATUS_OPTIONS = ["ACTIVE", "GRACE_PERIOD", "DEFAULTED", "PAID"] as const;
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const STATUS_OPTIONS = [
+    "ACTIVE",
+    "GRACE_PERIOD",
+    "DEFAULTED",
+    "PAID",
+] as const;
+
 type LoanStatusValue = (typeof STATUS_OPTIONS)[number];
 
 const STATUS_STYLES: Record<LoanStatusValue, string> = {
@@ -16,46 +30,54 @@ const STATUS_STYLES: Record<LoanStatusValue, string> = {
 interface StatusDropdownProps {
     loanId: string;
     status: LoanStatusValue;
-    onStatusChange: (loanId: string, newStatus: LoanStatusValue, paidAt: string | null) => void;
+    onStatusChange: (
+        loanId: string,
+        newStatus: LoanStatusValue,
+        paidAt: string | null
+    ) => void;
 }
 
-const StatusDropdown = ({ loanId, status, onStatusChange }: StatusDropdownProps) => {
+const StatusDropdown = ({
+    loanId,
+    status,
+    onStatusChange,
+}: StatusDropdownProps) => {
     const [open, setOpen] = useState(false);
     const [saving, setSaving] = useState(false);
-    const ref = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            if (ref.current && !ref.current.contains(e.target as Node)) {
-                setOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
 
     const handleSelect = async (newStatus: LoanStatusValue) => {
-        if (newStatus === status) {
+        if (newStatus === status || saving) {
             setOpen(false);
             return;
         }
 
         setSaving(true);
+
         try {
             const res = await fetch(`/api/transaction/${loanId}`, {
                 method: "PATCH",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                },
                 body: JSON.stringify({ status: newStatus }),
             });
 
             const data = await res.json();
 
             if (!res.ok || data?.success === false) {
-                throw new Error(data?.message || "Failed to update status");
+                throw new Error(
+                    data?.message || "Failed to update status"
+                );
             }
 
-            onStatusChange(loanId, newStatus, data.loan.paidAt);
+            onStatusChange(
+                loanId,
+                newStatus,
+                data.loan?.paidAt ?? null
+            );
+
         } catch (err) {
+            console.error("Status update error:", err);
             alert("Could not update status. Please try again.");
         } finally {
             setSaving(false);
@@ -63,7 +85,6 @@ const StatusDropdown = ({ loanId, status, onStatusChange }: StatusDropdownProps)
         }
     };
 
-   
     if (status === "PAID") {
         return (
             <span
@@ -75,33 +96,45 @@ const StatusDropdown = ({ loanId, status, onStatusChange }: StatusDropdownProps)
     }
 
     return (
-        <div className="relative" ref={ref}>
-            <button
-                type="button"
-                onClick={() => setOpen((prev) => !prev)}
-                disabled={saving}
-                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[8pt] font-medium disabled:opacity-60 ${STATUS_STYLES[status]}`}
-            >
-                {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : status}
-                {!saving && <ChevronDown className="w-3 h-3" />}
-            </button>
+        <DropdownMenu open={open} onOpenChange={setOpen}>
+            <DropdownMenuTrigger>
+                <button
+                    disabled={saving}
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[8pt] font-medium disabled:opacity-60 ${STATUS_STYLES[status]}`}
+                >
+                    {saving ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                        <>
+                            {status.replace("_", " ")}
+                            <ChevronDown className="w-3 h-3" />
+                        </>
+                    )}
+                </button>
+            </DropdownMenuTrigger>
 
-            {open && (
-                <div className="absolute left-0 mt-1 w-40 bg-white rounded-md shadow-lg border border-zinc-100 py-1 z-50">
-                    {STATUS_OPTIONS.map((option) => (
-                        <button
-                            key={option}
-                            onClick={() => handleSelect(option)}
-                            className={`w-full text-left px-3 py-1.5 text-[8pt] hover:bg-zinc-50 ${
-                                option === status ? "font-semibold text-zinc-900" : "text-zinc-600"
-                            }`}
-                        >
-                            {option}
-                        </button>
-                    ))}
-                </div>
-            )}
-        </div>
+            <DropdownMenuContent
+                align="start"
+                side="top"
+                sideOffset={5}
+                className="w-44 z-9999 bg-white border border-gray-200 shadow-xl"
+            >
+                {STATUS_OPTIONS.map((option) => (
+                    <DropdownMenuItem
+                        key={option}
+                        disabled={saving}
+                        onSelect={() => handleSelect(option)}
+                        className={`cursor-pointer text-xs ${
+                            option === status
+                                ? "font-semibold bg-zinc-100"
+                                : ""
+                        }`}
+                    >
+                        {option.replace("_", " ")}
+                    </DropdownMenuItem>
+                ))}
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 };
 

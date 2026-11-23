@@ -10,7 +10,11 @@ import { Input } from "./ui/input";
 
 interface TakeLoanProps {
   id: string,
-  name: string
+  name: string,
+  aliasname: string
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }
 
 interface FormState {
@@ -25,12 +29,27 @@ const INITIAL_STATE: FormState = {
   takenAt: "",
 };
 
-const TakeLoan = ({ id, name }: TakeLoanProps) => {
-
-  const [open, setOpen] = useState(false);
+const TakeLoan = ({
+  id,
+  name,
+  aliasname,
+  open: controlledOpen,
+  onOpenChange,
+  hideTrigger = false, }: TakeLoanProps) => {
   const [form, setForm] = useState<FormState>(INITIAL_STATE);
   const [submitting, setSubmitting] = useState(false);
 
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  const open = controlledOpen ?? internalOpen;
+
+  const setOpen = (next: boolean) => {
+    if (onOpenChange) {
+      onOpenChange(next);
+    } else {
+      setInternalOpen(next);
+    }
+  }
   const handleChange = (field: keyof FormState) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -106,7 +125,6 @@ const TakeLoan = ({ id, name }: TakeLoanProps) => {
     return data;
   };
 
-
   return (
     <Dialog
       open={open}
@@ -114,14 +132,15 @@ const TakeLoan = ({ id, name }: TakeLoanProps) => {
         setOpen(next);
         if (!next) resetForm();
       }}
-
     >
-      <DialogTrigger
-        className="cursor-pointer"
-        aria-label={`Grant ${name}`}>
-        <Plus className="w-4.5 text-slate-100" />
-      </DialogTrigger>
-
+      {!hideTrigger && (
+        <DialogTrigger
+          className="cursor-pointer flex gap-2 items-center"
+          aria-label={`Grant ${name}`}>
+          <Plus className="w-4.5 text-slate-100" />
+          <p className="text-slate-100">{aliasname}</p>
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Grant Loan to {name}</DialogTitle>

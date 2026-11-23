@@ -2,7 +2,7 @@
 
 import AddLoaneeForm from "@/components/AddLoaneeForm";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight, Crown } from "lucide-react";
+import { ChevronLeft, ChevronRight, Crown, Ellipsis } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { usePathname } from 'next/navigation';
 import ViewLoanee from "@/components/ViewLoanee";
@@ -10,6 +10,22 @@ import UpdateLoanee from "@/components/UpdateLoanee";
 import TakeLoan from "@/components/TakeLoan";
 import UserTransactionHistory from "@/components/UserTransactionHistory";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuPortal,
+    DropdownMenuSeparator,
+    DropdownMenuShortcut,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import ActionMenu from "@/components/ActionMenu";
 
 interface Loanee {
     id: string;
@@ -59,6 +75,8 @@ export const bankImageUrl = [
     },
 ];
 
+type ActiveAction = "take" | "return" | "view" | "history" | null;
+
 const LoaneesList = () => {
     const pathname = usePathname();
     const [loanees, setLoanees] = useState<Loanee[]>([]);
@@ -66,7 +84,8 @@ const LoaneesList = () => {
     const [error, setError] = useState<string | null>(null);
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
-
+    const [activeAction, setActiveAction] = useState<ActiveAction>(null);
+    const [selectedLoanee, setSelectedLoanee] = useState<Loanee | null>(null);
 
     const label =
         pathname === "/admin"
@@ -201,115 +220,182 @@ const LoaneesList = () => {
                     />
                 </div>
             </div>
-            <div className="w-full overflow-hidden rounded-xl border border-gray-800 bg-gray-700 shadow-lg">
 
+            <div className="w-full overflow-hidden rounded-xl border border-gray-800 bg-gray-700 shadow-lg">
                 {filtered.length === 0 ? (
                     <div className="w-full py-10 text-center text-sm text-zinc-500">
                         No loanees match your search.
                     </div>
                 ) : (
                     <>
-                        <table className="w-full text-xs text-left">
-                            <thead className="border-b border-gray-800 bg-gray-800 text-gray-400">
-                                <tr>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Name</th>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Email</th>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Phone</th>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Bank</th>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Joined</th>
-                                    <th className="px-4 py-3 font-medium uppercase tracking-wider">Last Login</th>
-                                    <th className="px-4 py-3 font-medium text-end uppercase tracking-wider">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {paginated.map((loanee) => (
-                                    <tr
-                                        key={loanee.id}
-                                        className="border-b border-gray-600/60 transition-colors last:border-0 hover:bg-gray-600/50">
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-3">
-                                                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-amber-300 to-amber-600 text-xs font-semibold text-gray-900">
-                                                    {getInitials(loanee.fullName)}
-                                                </div>
-                                                <span className="font-bold text-white">
-                                                    {loanee.fullName}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-3 text-slate-300">
-                                            {loanee.email}
-                                        </td>
-                                        <td className="px-4 py-3 text-slate-300">
-                                            {loanee.phoneNumber}
-                                        </td>
-                                        <td className="px-4 py-3 text-slate-300">
-                                            {(() => {
-                                                const bankImage = bankImageUrl.find(
-                                                    (bank) =>
-                                                        bank.bankName.toLowerCase() ===
-                                                        loanee.bankName?.toLowerCase()
-                                                );
-
-                                                return (
-                                                    <div className="flex items-center gap-2">
-                                                        {bankImage && (
-                                                            <img
-                                                                src={bankImage.imageUrl}
-                                                                alt={loanee.bankName ?? "Bank"}
-                                                                className="w-14 h-14 object-contain rounded"
-                                                            />
-                                                        )}
-                                                    </div>
-                                                );
-                                            })()}
-                                        </td>
-                                        <td className="px-4 py-3 text-slate-300">
-                                            {formatDate(loanee.createdAt)}
-                                        </td>
-                                        <td className="px-4 py-3 text-slate-300">
-                                            {formatDate(loanee.lastLogin)}
-                                        </td>
-                                        <td className="px-4 py-3 text-zinc-600 flex gap-4 justify-end items-center h-20">
-                                            <div>
-                                                <TakeLoan
-                                                    id={loanee.id}
-                                                    name={loanee.fullName}
-                                                />
-                                            </div>
-
-                                            <div>
-                                                <UpdateLoanee
-                                                    id={loanee.id}
-                                                    name={loanee.fullName}
-                                                    phoneNumber={loanee.phoneNumber}
-                                                />
-                                            </div>
-
-                                            <div>
-                                                <ViewLoanee
-                                                    name={loanee.fullName}
-                                                    role={loanee.role}
-                                                    email={loanee.email}
-                                                    phoneNumber={loanee.phoneNumber}
-                                                    createdAt={loanee.createdAt}
-                                                    lastLogin={loanee.lastLogin || ""}
-                                                />
-                                            </div>
-
-                                            <div>
-                                                <UserTransactionHistory
-                                                    id={loanee.id}
-                                                    name={loanee.fullName}
-                                                    email={loanee.email}
-                                                    phoneNumber={loanee.phoneNumber}
-                                                />
-                                            </div>
-                                        </td>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-xs text-left">
+                                <thead className="border-b border-gray-800 bg-gray-800 text-gray-400">
+                                    <tr>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Name</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Email</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Phone</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Bank</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Joined</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Last Login</th>
+                                        <th className="px-4 py-3 font-medium text-end uppercase tracking-wider">Action</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {paginated.map((loanee) => (
+                                        <tr
+                                            key={loanee.id}
+                                            className="border-b border-gray-600/60 transition-colors last:border-0 hover:bg-gray-600/50">
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-amber-300 to-amber-600 text-xs font-semibold text-gray-900">
+                                                        {getInitials(loanee.fullName)}
+                                                    </div>
+                                                    <span className="font-bold text-white">
+                                                        {loanee.fullName}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3 text-slate-300">
+                                                {loanee.email}
+                                            </td>
+                                            <td className="px-4 py-3 text-slate-300">
+                                                {loanee.phoneNumber}
+                                            </td>
+                                            <td className="px-4 py-3 text-slate-300">
+                                                {(() => {
+                                                    const bankImage = bankImageUrl.find(
+                                                        (bank) =>
+                                                            bank.bankName.toLowerCase() ===
+                                                            loanee.bankName?.toLowerCase()
+                                                    );
 
+                                                    return (
+                                                        <div className="flex items-center gap-2">
+                                                            {bankImage && (
+                                                                <img
+                                                                    src={bankImage.imageUrl}
+                                                                    alt={loanee.bankName ?? "Bank"}
+                                                                    className="w-14 h-14 object-contain rounded"
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })()}
+                                            </td>
+                                            <td className="px-4 py-3 text-slate-300">
+                                                {formatDate(loanee.createdAt)}
+                                            </td>
+                                            <td className="px-4 py-3 text-slate-300">
+                                                {formatDate(loanee.lastLogin)}
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex h-20 items-center justify-end">
+                                                    <ActionMenu
+                                                        label={`Actions for ${loanee.fullName}`}
+                                                        actions={[
+                                                            {
+                                                                label: "Take Loan",
+                                                                onClick: () => {
+                                                                    setSelectedLoanee(loanee);
+                                                                    setActiveAction("take");
+                                                                },
+                                                            },
+                                                            {
+                                                                label: "Return Loan",
+                                                                onClick: () => {
+                                                                    setSelectedLoanee(loanee);
+                                                                    setActiveAction("return");
+                                                                },
+                                                            },
+                                                            {
+                                                                label: "View Loan",
+                                                                onClick: () => {
+                                                                    setSelectedLoanee(loanee);
+                                                                    setActiveAction("view");
+                                                                },
+                                                            },
+                                                            {
+                                                                label: "History",
+                                                                onClick: () => {
+                                                                    setSelectedLoanee(loanee);
+                                                                    setActiveAction("history");
+                                                                },
+                                                            },
+                                                        ]}
+                                                    />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+
+
+                            </table>
+                        </div>
+                        {selectedLoanee && (
+                            <>
+                                {activeAction === "take" && (
+                                    <TakeLoan
+                                        key={`take-${selectedLoanee.id}`}
+                                        id={selectedLoanee.id}
+                                        name={selectedLoanee.fullName}
+                                        aliasname="Take Loan"
+                                        open={true}
+                                        onOpenChange={(next) => {
+                                            if (!next) setActiveAction(null);
+                                        }}
+                                        hideTrigger
+                                    />
+                                )}
+
+                                {activeAction === "return" && (
+                                    <UpdateLoanee
+                                        key={`return-${selectedLoanee.id}`}
+                                        id={selectedLoanee.id}
+                                        name={selectedLoanee.fullName}
+                                        phoneNumber={selectedLoanee.phoneNumber}
+                                        open={true}
+                                        onOpenChange={(next) => {
+                                            if (!next) setActiveAction(null);
+                                        }}
+                                        hideTrigger
+                                    />
+                                )}
+
+                                {activeAction === "view" && (
+                                    <ViewLoanee
+                                        key={`view-${selectedLoanee.id}`}
+                                        name={selectedLoanee.fullName}
+                                        role={selectedLoanee.role}
+                                        email={selectedLoanee.email}
+                                        phoneNumber={selectedLoanee.phoneNumber}
+                                        createdAt={selectedLoanee.createdAt}
+                                        lastLogin={selectedLoanee.lastLogin}
+                                        open={true}
+                                        onOpenChange={(next) => {
+                                            if (!next) setActiveAction(null);
+                                        }}
+                                        hideTrigger
+                                    />
+                                )}
+
+                                {activeAction === "history" && (
+                                    <UserTransactionHistory
+                                        key={`history-${selectedLoanee.id}`}
+                                        id={selectedLoanee.id}
+                                        name={selectedLoanee.fullName}
+                                        email={selectedLoanee.email}
+                                        phoneNumber={selectedLoanee.phoneNumber}
+                                        open={true}
+                                        onOpenChange={(next) => {
+                                            if (!next) setActiveAction(null);
+                                        }}
+                                        hideTrigger
+                                    />
+                                )}
+                            </>
+                        )}
                         <div className="flex items-center justify-between border-t border-gray-800 bg-gray-800/40 px-4 py-3 text-xs text-gray-400">
                             <span>
                                 Showing {(page - 1) * PAGE_SIZE + 1}–
