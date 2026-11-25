@@ -147,51 +147,27 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
             return;
         }
 
+        // StatusDropdown has already saved the new status via PATCH,
+        // so only update local state here (no second request).
         updateTransactionLocal(loanId, {
             loanStatus: newStatus,
             paidAt,
         });
 
-        try {
-            const res = await fetch(`/api/transaction/${loanId}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    status: newStatus,
-                }),
-            });
-
-            const data = await res.json();
-
-            if (!res.ok || !data.success) {
-                throw new Error(
-                    data?.message || "Failed to update transaction"
-                );
-            }
-            updateTransactionLocal(loanId, {
-                loanStatus: data.loan.LoanStatus,
-                paidAt: data.loan.paidAt,
-            });
-
-            if (newStatus === "PAID") {
+        if (newStatus === "PAID") {
+            try {
                 await addAmount(Number(previous.cachedAmountOwed));
-
                 toast.success(
                     "Loan marked as paid and amount added to Shoni account"
                 );
+            } catch (error) {
+                console.error(error);
+                toast.error(
+                    error instanceof Error
+                        ? error.message
+                        : "Failed to add amount to Shoni account"
+                );
             }
-        } catch (error) {
-            console.error(error);
-
-            updateTransactionLocal(loanId, previous);
-
-            toast.error(
-                error instanceof Error
-                    ? error.message
-                    : "Failed to update transaction"
-            );
         }
     };
 

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -97,20 +96,18 @@ const StatusDropdown = ({
 
     return (
         <DropdownMenu open={open} onOpenChange={setOpen}>
-            <DropdownMenuTrigger>
-                <button
-                    disabled={saving}
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[8pt] font-medium disabled:opacity-60 ${STATUS_STYLES[status]}`}
-                >
-                    {saving ? (
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                    ) : (
-                        <>
-                            {status.replace("_", " ")}
-                            <ChevronDown className="w-3 h-3" />
-                        </>
-                    )}
-                </button>
+            <DropdownMenuTrigger
+                disabled={saving}
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[8pt] font-medium disabled:opacity-60 ${STATUS_STYLES[status]}`}
+            >
+                {saving ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                ) : (
+                    <>
+                        {status.replace("_", " ")}
+                        <ChevronDown className="w-3 h-3" />
+                    </>
+                )}
             </DropdownMenuTrigger>
 
             <DropdownMenuContent
@@ -123,7 +120,7 @@ const StatusDropdown = ({
                     <DropdownMenuItem
                         key={option}
                         disabled={saving}
-                        onSelect={() => handleSelect(option)}
+                        onClick={() => handleSelect(option)}
                         className={`cursor-pointer text-xs ${
                             option === status
                                 ? "font-semibold bg-zinc-100"
