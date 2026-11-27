@@ -120,7 +120,7 @@ const PromiseDateCell = ({ loanId, promisedPayDate, loanStatus, paidAt, onSaved 
                     {BADGES[state].label}
                 </span>
             )}
-            <span className="whitespace-nowrap text-slate-300">
+            <span className="whitespace-nowrap text-slate-300 text-[9pt]">
                 {new Date(`${promisedPayDate}T00:00:00`).toLocaleDateString("en-ZA", {
                     year: "numeric",
                     month: "short",
