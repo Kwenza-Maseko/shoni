@@ -10,8 +10,8 @@ import {
     numeric,
     integer,
     unique,
+    date,
 } from "drizzle-orm/pg-core";
-
 
 export const userRoleEnum = pgEnum("user_role", ["LOANEE", "LOANER"]);
 export const protectedEnum = pgEnum("protected_status", ["YES", "NO"]);
@@ -80,6 +80,7 @@ export const loans = pgTable("loans", {
         scale: 2,
     }).notNull(),
     LoanStatus: loanStatusEnum("loan_status").notNull().default("ACTIVE"),
+    promisedPayDate: date("promised_pay_date", { mode: "string" }),
     takenAt: timestamp("taken_at", { withTimezone: true }).notNull(),
     dueAt: timestamp("due_at", { withTimezone: true }).notNull(),
 

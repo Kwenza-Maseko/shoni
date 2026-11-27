@@ -11,6 +11,7 @@ export interface Transcations {
     cachedAmountOwed: string;
     bankName: string,
     loanStatus: string;
+    promisedPayDate: string | null;
     takenAt: string;
     dueDate: string;
     gracePeriod: string | null;

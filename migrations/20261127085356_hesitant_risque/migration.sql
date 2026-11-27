@@ -1,0 +1,1 @@
+ALTER TABLE "loans" ADD COLUMN "promised_pay_date" date;

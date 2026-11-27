@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { siWhatsapp } from 'simple-icons/icons';
 import { Skeleton } from "@/components/ui/skeleton"
 import { Checkbox } from './ui/checkbox';
+import PromiseDateCell from './PromiseDateCell';
 
 interface TransactionActionPanelProps {
     status?: string;
@@ -70,6 +71,7 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
 
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
+    const [promisedOnly, setPromisedOnly] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
     const toggleSelected = (id: string, checked: boolean) => {
@@ -108,6 +110,13 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
             data = data.filter((t) => t.loanStatus === status);
         }
 
+        if (promisedOnly) {
+            // unpaid loans with a promised date, earliest (most overdue) first
+            data = data
+                .filter((t) => t.promisedPayDate && t.loanStatus !== "PAID")
+                .sort((a, b) => a.promisedPayDate!.localeCompare(b.promisedPayDate!));
+        }
+
         if (search.trim()) {
             const q = search.toLowerCase();
             data = data.filter(
@@ -118,7 +127,15 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
         }
 
         return data;
-    }, [transactions, status, search]);
+    }, [transactions, status, search, promisedOnly]);
+
+    const promisedCount = useMemo(
+        () =>
+            transactions.filter(
+                (t) => t.promisedPayDate && t.loanStatus !== "PAID" && (!status || t.loanStatus === status)
+            ).length,
+        [transactions, status]
+    );
 
     const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
 
@@ -199,6 +216,7 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
     );
 
     if (loading) {
+        return (
         <div className="flex w-full max-w-sm flex-col gap-2">
             {Array.from({ length: 5 }).map((_, index) => (
                 <div className="flex gap-4" key={index}>
@@ -208,6 +226,7 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                 </div>
             ))}
         </div>
+        );
     }
 
     if (error) {
@@ -276,12 +295,26 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                         setPage(1);
                     }}
                 />
+                <button
+                    type="button"
+                    aria-pressed={promisedOnly}
+                    onClick={() => {
+                        setPromisedOnly((v) => !v);
+                        setPage(1);
+                    }}
+                    className={`shrink-0 whitespace-nowrap rounded-lg border px-3 py-2.5 text-xs font-medium transition-colors ${promisedOnly
+                        ? "border-sky-400 bg-sky-400/20 text-sky-600"
+                        : "border-slate-500 text-slate-500 hover:border-sky-400"
+                        }`}
+                >
+                    Promised ({promisedCount})
+                </button>
             </div>
 
             <div className="w-full overflow-hidden rounded-xl border border-gray-800 bg-gray-700 shadow-lg">
                 {filtered.length === 0 ? (
                     <div className="w-full py-10 text-center text-sm text-zinc-500">
-                        No transactions match your search.
+                        {promisedOnly ? "No promised loans match." : "No transactions match your search."}
                     </div>
                 ) : (
                     <>
@@ -311,6 +344,7 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                                         <th className="px-4 py-3 font-medium uppercase tracking-wider">Status</th>
                                         <th className="px-4 py-3 font-medium uppercase tracking-wider">Taken At</th>
                                         <th className="px-4 py-3 font-medium uppercase tracking-wider">Due At</th>
+                                        <th className="px-4 py-3 font-medium uppercase tracking-wider">Promised</th>
                                         <th className="px-4 py-3 font-medium uppercase tracking-wider">Grace Period</th>
                                         <th className="px-4 py-3 font-medium uppercase tracking-wider">Paid At</th>
                                     </tr>
@@ -413,6 +447,17 @@ const TransactionActionPanel = ({ status }: TransactionActionPanelProps) => {
                                             </td>
                                             <td className="px-4 py-3 text-slate-300">
                                                 {formatDate(trans.dueDate)}
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <PromiseDateCell
+                                                    loanId={trans.id}
+                                                    promisedPayDate={trans.promisedPayDate}
+                                                    loanStatus={trans.loanStatus}
+                                                    paidAt={trans.paidAt}
+                                                    onSaved={(id: string, promisedPayDate: any) =>
+                                                        updateTransactionLocal(id, { promisedPayDate })
+                                                    }
+                                                />
                                             </td>
                                             <td className="px-4 py-3 text-slate-300">
                                                 {formatDate(trans.gracePeriod)}
